@@ -5,6 +5,7 @@ Version:        1.0.0
 Release:        0.alpha1.0
 Summary:        Compositor for the COSMIC DE
 License:        GPL-3.0-only
+Group:          Desktop/COSMIC
 URL:            https://github.com/pop-os/cosmic-comp
 Source0:        https://github.com/pop-os/cosmic-applibrary/archive/epoch-%{version}-alpha.1/%{name}-epoch-%{version}-alpha.1.tar.gz
 Source1:        vendor.tar.xz
