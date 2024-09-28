@@ -11,9 +11,9 @@ git = "https://github.com/Drakulix/id-tree.git"
 branch = "feature/copy_clone"
 replace-with = "vendored-sources"
 
-[source."git+https://github.com/Smithay/smithay-egui.git?rev=cdc652e0"]
+[source."git+https://github.com/Smithay/smithay-egui.git?rev=0d0b4ca0"]
 git = "https://github.com/Smithay/smithay-egui.git"
-rev = "cdc652e0"
+rev = "0d0b4ca0"
 replace-with = "vendored-sources"
 
 [source."git+https://github.com/gfx-rs/wgpu?rev=20fda69"]
@@ -62,9 +62,9 @@ git = "https://github.com/pop-os/window_clipboard.git"
 tag = "pop-dnd-8"
 replace-with = "vendored-sources"
 
-[source."git+https://github.com/smithay//smithay?rev=e7f0857"]
+[source."git+https://github.com/smithay//smithay?rev=08d31e1"]
 git = "https://github.com/smithay//smithay"
-rev = "e7f0857"
+rev = "08d31e1"
 replace-with = "vendored-sources"
 
 [source.vendored-sources]
