@@ -62,9 +62,9 @@ git = "https://github.com/pop-os/window_clipboard.git"
 tag = "pop-dnd-8"
 replace-with = "vendored-sources"
 
-[source."git+https://github.com/smithay//smithay?rev=05c49f7"]
+[source."git+https://github.com/smithay//smithay?rev=bc1d732"]
 git = "https://github.com/smithay//smithay"
-rev = "05c49f7"
+rev = "bc1d732"
 replace-with = "vendored-sources"
 
 [source.vendored-sources]
