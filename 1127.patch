@@ -1,0 +1,33 @@
+From f73d9cee6b4c5ee706470fdeba1c4bd0a37cd672 Mon Sep 17 00:00:00 2001
+From: Victoria Brekenfeld <github@drakulix.de>
+Date: Tue, 14 Jan 2025 11:13:00 +0100
+Subject: [PATCH] chore: Update smithay
+
+---
+ Cargo.lock | 2 +-
+ Cargo.toml | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Cargo.lock b/Cargo.lock
+index 68dbba13..86eb6422 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -4799,7 +4799,7 @@ checksum = "3c5e1a9a646d36c3599cd173a41282daf47c44583ad367b8e6837255952e5c67"
+ [[package]]
+ name = "smithay"
+ version = "0.3.0"
+-source = "git+https://github.com/smithay//smithay?rev=9fbc9fb#9fbc9fbbfe04c94e6716b89080145d061f66031f"
++source = "git+https://github.com/smithay//smithay?rev=1ceba66#1ceba66e1c3b278b96a83e85a392278e8a7c9661"
+ dependencies = [
+  "appendlist",
+  "ash",
+diff --git a/Cargo.toml b/Cargo.toml
+index 1cbe35aa..4e0a745f 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -119,4 +119,4 @@ inherits = "release"
+ lto = "fat"
+ 
+ [patch."https://github.com/Smithay/smithay.git"]
+-smithay = { git = "https://github.com/smithay//smithay", rev = "9fbc9fb" }
++smithay = { git = "https://github.com/smithay//smithay", rev = "1ceba66" }
