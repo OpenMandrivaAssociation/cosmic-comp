@@ -2,15 +2,15 @@
 
 Name:           cosmic-comp
 Version:        1.0.0
-Release:        0.alpha5.2
+Release:        0.alpha5.1
 Summary:        Compositor for the COSMIC DE
 License:        GPL-3.0-only
 Group:          Desktop/COSMIC
 URL:            https://github.com/pop-os/cosmic-comp
-Source0:        https://github.com/pop-os/cosmic-applibrary/archive/epoch-%{version}-alpha.5/%{name}-epoch-%{version}-alpha.5.tar.gz
+Source0:        https://github.com/pop-os/cosmic-applibrary/archive/epoch-%{version}-alpha.5.1/%{name}-epoch-%{version}-alpha.5.1.tar.gz
 Source1:        vendor.tar.xz
 Source2:        cargo_config
-Patch0:         https://patch-diff.githubusercontent.com/raw/pop-os/cosmic-comp/pull/1127.patch
+#Patch0:         https://patch-diff.githubusercontent.com/raw/pop-os/cosmic-comp/pull/1127.patch
 
 BuildRequires:  rust-packaging
 BuildRequires:  make
@@ -33,7 +33,7 @@ BuildRequires:  pkgconfig(xkbcommon)
 %{summary}.
 
 %prep
-%autosetup -n %{name}-epoch-%{version}-alpha.5 -a1 -p1
+%autosetup -n %{name}-epoch-%{version}-alpha.5.1 -a1 -p1
 mkdir .cargo
 cp %{SOURCE2} .cargo/config
 
