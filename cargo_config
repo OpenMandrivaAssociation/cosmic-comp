@@ -11,11 +11,6 @@ git = "https://github.com/Drakulix/id-tree.git"
 branch = "feature/copy_clone"
 replace-with = "vendored-sources"
 
-[source."git+https://github.com/Smithay/smithay-egui.git?rev=e720136"]
-git = "https://github.com/Smithay/smithay-egui.git"
-rev = "e720136"
-replace-with = "vendored-sources"
-
 [source."git+https://github.com/jackpot51/rust-atomicwrites"]
 git = "https://github.com/jackpot51/rust-atomicwrites"
 replace-with = "vendored-sources"
@@ -23,6 +18,10 @@ replace-with = "vendored-sources"
 [source."git+https://github.com/pop-os//cosmic-protocols?branch=main"]
 git = "https://github.com/pop-os//cosmic-protocols"
 branch = "main"
+replace-with = "vendored-sources"
+
+[source."git+https://github.com/pop-os/cosmic-randr/"]
+git = "https://github.com/pop-os/cosmic-randr/"
 replace-with = "vendored-sources"
 
 [source."git+https://github.com/pop-os/cosmic-settings-daemon"]
@@ -61,9 +60,9 @@ git = "https://github.com/pop-os/window_clipboard.git"
 tag = "pop-0.13-2"
 replace-with = "vendored-sources"
 
-[source."git+https://github.com/smithay/smithay//?rev=ce61c9b"]
-git = "https://github.com/smithay/smithay//"
-rev = "ce61c9b"
+[source."git+https://github.com/smithay/smithay.git?rev=eb45814"]
+git = "https://github.com/smithay/smithay.git"
+rev = "eb45814"
 replace-with = "vendored-sources"
 
 [source.vendored-sources]
