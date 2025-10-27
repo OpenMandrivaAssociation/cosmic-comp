@@ -32,6 +32,10 @@ replace-with = "vendored-sources"
 git = "https://github.com/pop-os/cosmic-text.git"
 replace-with = "vendored-sources"
 
+[source."git+https://github.com/pop-os/dbus-settings-bindings"]
+git = "https://github.com/pop-os/dbus-settings-bindings"
+replace-with = "vendored-sources"
+
 [source."git+https://github.com/pop-os/freedesktop-icons"]
 git = "https://github.com/pop-os/freedesktop-icons"
 replace-with = "vendored-sources"
