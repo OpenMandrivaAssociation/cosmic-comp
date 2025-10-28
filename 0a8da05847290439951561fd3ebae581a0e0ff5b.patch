@@ -1,0 +1,25 @@
+From 0a8da05847290439951561fd3ebae581a0e0ff5b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Vuka=C5=A1in=20Vojinovi=C4=87?=
+ <150025636+git-f0x@users.noreply.github.com>
+Date: Thu, 16 Oct 2025 16:02:30 +0200
+Subject: [PATCH] fix(kms): early exit when iterating over crts
+
+Clippy noted that this loop doesn't actually loop, so maybe this fixes some issues.
+---
+ src/backend/kms/mod.rs | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/backend/kms/mod.rs b/src/backend/kms/mod.rs
+index 1b01600e..bc0383a6 100644
+--- a/src/backend/kms/mod.rs
++++ b/src/backend/kms/mod.rs
+@@ -797,7 +797,9 @@ impl KmsGuard<'_> {
+                             break 'outer;
+                         }
+                     }
++                }
+ 
++                if !new_pairings.contains_key(&conn) {
+                     // test failed, we don't have a crtc for conn
+                     anyhow::bail!("Missing crtc for {conn:?}, gpu doesn't have enough resources.");
+                 }
