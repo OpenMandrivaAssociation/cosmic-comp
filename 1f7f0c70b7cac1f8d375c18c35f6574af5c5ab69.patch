@@ -1,0 +1,3144 @@
+From 1f7f0c70b7cac1f8d375c18c35f6574af5c5ab69 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Vuka=C5=A1in=20Vojinovi=C4=87?=
+ <150025636+git-f0x@users.noreply.github.com>
+Date: Thu, 16 Oct 2025 18:53:57 +0200
+Subject: [PATCH] chore: format for Rust 2024
+
+---
+ cosmic-comp-config/src/lib.rs                 |  2 +-
+ cosmic-comp-config/src/output/comp.rs         |  4 +-
+ cosmic-comp-config/src/output/randr.rs        |  2 +-
+ rustfmt.toml                                  |  2 +-
+ src/backend/kms/device.rs                     | 14 ++---
+ src/backend/kms/drm_helpers.rs                |  6 +-
+ src/backend/kms/mod.rs                        | 19 +++---
+ src/backend/kms/render/gles.rs                |  6 +-
+ src/backend/kms/render/pixman.rs              |  2 +-
+ src/backend/kms/socket.rs                     |  6 +-
+ src/backend/kms/surface/mod.rs                | 34 +++++------
+ src/backend/mod.rs                            |  2 +-
+ src/backend/render/cursor.rs                  | 17 +++---
+ src/backend/render/element.rs                 |  8 +--
+ src/backend/render/mod.rs                     | 56 +++++++++---------
+ src/backend/winit.rs                          |  8 +--
+ src/backend/x11.rs                            | 10 ++--
+ src/config/mod.rs                             | 14 ++---
+ src/dbus/mod.rs                               |  2 +-
+ src/debug.rs                                  |  4 +-
+ src/input/actions.rs                          |  8 +--
+ src/input/mod.rs                              | 19 +++---
+ src/logger/mod.rs                             |  2 +-
+ src/main.rs                                   |  2 +-
+ src/session.rs                                |  4 +-
+ src/shell/element/mod.rs                      | 18 +++---
+ src/shell/element/resize_indicator.rs         |  4 +-
+ src/shell/element/stack.rs                    | 27 ++++-----
+ src/shell/element/stack/tab.rs                | 11 ++--
+ src/shell/element/stack/tab_text.rs           |  7 +--
+ src/shell/element/stack/tabs.rs               | 15 +++--
+ src/shell/element/stack_hover.rs              |  4 +-
+ src/shell/element/surface.rs                  | 20 +++----
+ src/shell/element/swap_indicator.rs           |  2 +-
+ src/shell/element/window.rs                   | 12 ++--
+ src/shell/focus/mod.rs                        | 14 ++---
+ src/shell/focus/order.rs                      |  6 +-
+ src/shell/focus/target.rs                     | 10 ++--
+ src/shell/grabs/menu/default.rs               |  2 +-
+ src/shell/grabs/menu/item.rs                  |  7 +--
+ src/shell/grabs/menu/mod.rs                   | 14 ++---
+ src/shell/grabs/moving.rs                     | 16 ++---
+ src/shell/layout/floating/grabs/resize.rs     |  4 +-
+ src/shell/layout/floating/mod.rs              | 14 ++---
+ src/shell/layout/tiling/blocker.rs            |  2 +-
+ src/shell/layout/tiling/grabs/resize.rs       |  2 +-
+ src/shell/layout/tiling/grabs/swap.rs         |  4 +-
+ src/shell/layout/tiling/mod.rs                | 36 +++++------
+ src/shell/mod.rs                              | 59 ++++++-------------
+ src/shell/seats.rs                            |  4 +-
+ src/shell/workspace.rs                        | 22 +++----
+ src/shell/zoom.rs                             | 11 ++--
+ src/state.rs                                  | 27 ++++-----
+ src/systemd.rs                                |  2 +-
+ src/theme.rs                                  |  2 +-
+ src/utils/iced.rs                             | 20 +++----
+ src/utils/prelude.rs                          |  2 +-
+ src/utils/rlimit.rs                           |  2 +-
+ src/utils/screenshot.rs                       |  6 +-
+ src/utils/tween.rs                            |  2 +-
+ src/wayland/handlers/a11y.rs                  |  2 +-
+ src/wayland/handlers/atspi.rs                 |  2 +-
+ src/wayland/handlers/buffer.rs                |  2 +-
+ src/wayland/handlers/compositor.rs            | 14 ++---
+ src/wayland/handlers/corner_radius.rs         |  2 +-
+ src/wayland/handlers/data_device.rs           |  2 +-
+ src/wayland/handlers/decoration.rs            |  2 +-
+ src/wayland/handlers/drm.rs                   |  4 +-
+ src/wayland/handlers/fractional_scale.rs      |  2 +-
+ src/wayland/handlers/input_method.rs          |  2 +-
+ src/wayland/handlers/layer_shell.rs           |  2 +-
+ src/wayland/handlers/output_configuration.rs  |  4 +-
+ src/wayland/handlers/output_power.rs          |  2 +-
+ src/wayland/handlers/overlap_notify.rs        |  4 +-
+ src/wayland/handlers/pointer_constraints.rs   |  2 +-
+ src/wayland/handlers/screencopy/mod.rs        |  5 +-
+ src/wayland/handlers/screencopy/render.rs     | 12 ++--
+ src/wayland/handlers/screencopy/user_data.rs  |  2 +-
+ src/wayland/handlers/seat.rs                  |  4 +-
+ src/wayland/handlers/session_lock.rs          |  2 +-
+ src/wayland/handlers/toplevel_info.rs         |  4 +-
+ src/wayland/handlers/toplevel_management.rs   | 12 ++--
+ src/wayland/handlers/workspace.rs             |  2 +-
+ src/wayland/handlers/xdg_activation.rs        |  2 +-
+ src/wayland/handlers/xdg_shell/mod.rs         |  8 +--
+ src/wayland/handlers/xdg_shell/popup.rs       |  6 +-
+ .../handlers/xwayland_keyboard_grab.rs        |  2 +-
+ src/wayland/protocols/atspi.rs                |  2 +-
+ src/wayland/protocols/corner_radius.rs        |  2 +-
+ src/wayland/protocols/drm.rs                  |  6 +-
+ .../output_configuration/handlers/wlr.rs      |  4 +-
+ .../protocols/output_configuration/mod.rs     |  6 +-
+ src/wayland/protocols/output_power.rs         |  4 +-
+ src/wayland/protocols/overlap_notify.rs       |  2 +-
+ src/wayland/protocols/toplevel_info.rs        |  4 +-
+ src/wayland/protocols/toplevel_management.rs  |  4 +-
+ src/wayland/protocols/workspace/ext.rs        |  4 +-
+ src/wayland/protocols/workspace/mod.rs        |  2 +-
+ src/xwayland.rs                               | 14 ++---
+ 99 files changed, 399 insertions(+), 427 deletions(-)
+
+diff --git a/cosmic-comp-config/src/lib.rs b/cosmic-comp-config/src/lib.rs
+index 7dc29cc27..aa85dd2f5 100644
+--- a/cosmic-comp-config/src/lib.rs
++++ b/cosmic-comp-config/src/lib.rs
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-3.0-only
+ 
+-use cosmic_config::{cosmic_config_derive::CosmicConfigEntry, CosmicConfigEntry};
++use cosmic_config::{CosmicConfigEntry, cosmic_config_derive::CosmicConfigEntry};
+ use serde::{Deserialize, Serialize};
+ use std::collections::HashMap;
+ 
+diff --git a/cosmic-comp-config/src/output/comp.rs b/cosmic-comp-config/src/output/comp.rs
+index 19a0c24e1..1810b9d43 100644
+--- a/cosmic-comp-config/src/output/comp.rs
++++ b/cosmic-comp-config/src/output/comp.rs
+@@ -93,7 +93,9 @@ pub fn load_outputs(path: Option<impl AsRef<Path>>) -> OutputsConfig {
+                                     .find(|(_, info)| &info.connector == conn)
+                                 {
+                                     if config_clone[j].enabled != OutputState::Enabled {
+-                                        warn!("Invalid Mirroring tag, overriding with `Enabled` instead");
++                                        warn!(
++                                            "Invalid Mirroring tag, overriding with `Enabled` instead"
++                                        );
+                                         conf.enabled = OutputState::Enabled;
+                                     }
+                                 } else {
+diff --git a/cosmic-comp-config/src/output/randr.rs b/cosmic-comp-config/src/output/randr.rs
+index 962ccf836..dd6cb6c60 100644
+--- a/cosmic-comp-config/src/output/randr.rs
++++ b/cosmic-comp-config/src/output/randr.rs
+@@ -14,7 +14,7 @@ impl From<CompList> for cosmic_randr_shell::List {
+         let mut list = cosmic_randr_shell::List::default();
+         for (info, output) in infos.into_iter().zip(outputs.into_iter()) {
+             let current = list.modes.insert(cosmic_randr_shell::Mode {
+-                size: (output.mode.0 .0 as u32, output.mode.0 .1 as u32),
++                size: (output.mode.0.0 as u32, output.mode.0.1 as u32),
+                 refresh_rate: output.mode.1.unwrap_or_default(),
+                 // XXX not in config as far as i can tell
+                 preferred: false,
+diff --git a/rustfmt.toml b/rustfmt.toml
+index 8153a3d0b..350113681 100644
+--- a/rustfmt.toml
++++ b/rustfmt.toml
+@@ -1 +1 @@
+-style_edition = "2021"
++style_edition = "2024"
+diff --git a/src/backend/kms/device.rs b/src/backend/kms/device.rs
+index 627152f9e..ad07a9c74 100644
+--- a/src/backend/kms/device.rs
++++ b/src/backend/kms/device.rs
+@@ -3,7 +3,7 @@
+ use crate::{
+     backend::{
+         kms::render::gles::GbmGlowBackend,
+-        render::{init_shaders, output_elements, CursorMode, GlMultiRenderer, CLEAR_COLOR},
++        render::{CLEAR_COLOR, CursorMode, GlMultiRenderer, init_shaders, output_elements},
+     },
+     config::{CompTransformDef, EdidProduct, ScreenFilter},
+     shell::Shell,
+@@ -17,17 +17,17 @@ use libc::dev_t;
+ use smithay::{
+     backend::{
+         allocator::{
++            Format, Fourcc,
+             format::FormatSet,
+             gbm::{GbmAllocator, GbmDevice},
+-            Format, Fourcc,
+         },
+         drm::{
++            DrmDevice, DrmDeviceFd, DrmEvent, DrmNode, NodeType,
+             compositor::{FrameError, FrameFlags},
+             exporter::gbm::GbmFramebufferExporter,
+             output::{DrmOutputManager, LockedDrmOutputManager},
+-            DrmDevice, DrmDeviceFd, DrmEvent, DrmNode, NodeType,
+         },
+-        egl::{context::ContextPriority, EGLContext, EGLDevice, EGLDisplay},
++        egl::{EGLContext, EGLDevice, EGLDisplay, context::ContextPriority},
+         renderer::glow::GlowRenderer,
+         session::Session,
+     },
+@@ -35,10 +35,10 @@ use smithay::{
+     output::{Mode as OutputMode, Output, PhysicalProperties, Scale, Subpixel},
+     reexports::{
+         calloop::{LoopHandle, RegistrationToken},
+-        drm::control::{connector, crtc, Device as ControlDevice, ModeTypeFlags},
++        drm::control::{Device as ControlDevice, ModeTypeFlags, connector, crtc},
+         gbm::BufferObjectFlags as GbmBufferFlags,
+         rustix::fs::OFlags,
+-        wayland_server::{protocol::wl_buffer::WlBuffer, DisplayHandle, Weak},
++        wayland_server::{DisplayHandle, Weak, protocol::wl_buffer::WlBuffer},
+     },
+     utils::{Clock, DevPath, DeviceFd, Monotonic, Point, Transform},
+     wayland::drm_lease::{DrmLease, DrmLeaseState},
+@@ -52,7 +52,7 @@ use std::{
+     fmt,
+     os::fd::OwnedFd,
+     path::Path,
+-    sync::{atomic::AtomicBool, mpsc::Receiver, Arc, RwLock},
++    sync::{Arc, RwLock, atomic::AtomicBool, mpsc::Receiver},
+     time::Duration,
+ };
+ 
+diff --git a/src/backend/kms/drm_helpers.rs b/src/backend/kms/drm_helpers.rs
+index 7633d588b..364dabab7 100644
+--- a/src/backend/kms/drm_helpers.rs
++++ b/src/backend/kms/drm_helpers.rs
+@@ -1,15 +1,15 @@
+ // SPDX-License-Identifier: GPL-3.0-only
+ 
+-use anyhow::{anyhow, Context, Result};
++use anyhow::{Context, Result, anyhow};
+ use libdisplay_info::{edid::DisplayDescriptorTag, info::Info};
+ use smithay::{
+     reexports::drm::control::{
++        AtomicCommitFlags, Device as ControlDevice, Mode, ModeFlags, PlaneType, ResourceHandle,
+         atomic::AtomicModeReq,
+         connector::{self, State as ConnectorState},
+         crtc,
+         dumbbuffer::DumbBuffer,
+-        property, AtomicCommitFlags, Device as ControlDevice, Mode, ModeFlags, PlaneType,
+-        ResourceHandle,
++        property,
+     },
+     utils::Transform,
+ };
+diff --git a/src/backend/kms/mod.rs b/src/backend/kms/mod.rs
+index bc0383a68..e56673b8c 100644
+--- a/src/backend/kms/mod.rs
++++ b/src/backend/kms/mod.rs
+@@ -14,21 +14,21 @@ use indexmap::IndexMap;
+ use render::gles::GbmGlowBackend;
+ use smithay::{
+     backend::{
+-        allocator::{dmabuf::Dmabuf, format::FormatSet, Buffer},
+-        drm::{output::DrmOutputRenderElements, DrmDeviceFd, DrmNode, NodeType, VrrSupport},
++        allocator::{Buffer, dmabuf::Dmabuf, format::FormatSet},
++        drm::{DrmDeviceFd, DrmNode, NodeType, VrrSupport, output::DrmOutputRenderElements},
+         egl::{EGLContext, EGLDevice, EGLDisplay},
+         input::InputEvent,
+         libinput::{LibinputInputBackend, LibinputSessionInterface},
+         renderer::{glow::GlowRenderer, multigpu::GpuManager},
+-        session::{libseat::LibSeatSession, Event as SessionEvent, Session},
+-        udev::{primary_gpu, UdevBackend, UdevEvent},
++        session::{Event as SessionEvent, Session, libseat::LibSeatSession},
++        udev::{UdevBackend, UdevEvent, primary_gpu},
+     },
+     output::Output,
+     reexports::{
+         calloop::{Dispatcher, EventLoop, LoopHandle},
+         drm::{
+-            control::{connector::Interface, crtc, Device as _},
+             Device as _,
++            control::{Device as _, connector::Interface, crtc},
+         },
+         input::{self, Libinput},
+         wayland_server::{Client, DisplayHandle},
+@@ -36,7 +36,7 @@ use smithay::{
+     utils::{Clock, DevPath, Monotonic, Size},
+     wayland::{
+         dmabuf::DmabufGlobal,
+-        drm_syncobj::{supports_syncobj_eventfd, DrmSyncobjState},
++        drm_syncobj::{DrmSyncobjState, supports_syncobj_eventfd},
+         relative_pointer::RelativePointerManagerState,
+     },
+ };
+@@ -46,7 +46,7 @@ use tracing::{debug, error, info, trace, warn};
+ use std::{
+     collections::{HashMap, HashSet},
+     path::Path,
+-    sync::{atomic::AtomicBool, Arc, RwLock},
++    sync::{Arc, RwLock, atomic::AtomicBool},
+ };
+ 
+ mod device;
+@@ -58,7 +58,7 @@ use device::*;
+ pub(crate) use surface::Surface;
+ pub use surface::Timings;
+ 
+-use super::render::{output_elements, CursorMode, CLEAR_COLOR};
++use super::render::{CLEAR_COLOR, CursorMode, output_elements};
+ 
+ #[derive(Debug)]
+ pub struct KmsState {
+@@ -551,8 +551,7 @@ impl KmsState {
+                 Err(err) => {
+                     trace!(
+                         ?err,
+-                        "Failed to import dmabuf on {:?}",
+-                        device.inner.render_node
++                        "Failed to import dmabuf on {:?}", device.inner.render_node
+                     );
+                     last_err = err;
+                 }
+diff --git a/src/backend/kms/render/gles.rs b/src/backend/kms/render/gles.rs
+index 22c22c7aa..5d79b1eef 100644
+--- a/src/backend/kms/render/gles.rs
++++ b/src/backend/kms/render/gles.rs
+@@ -1,19 +1,19 @@
+ // SPDX-License-Identifier: GPL-3.0-only
+ 
+ use smithay::backend::{
++    SwapBuffersError,
+     allocator::{
++        Allocator,
+         dmabuf::{AnyError, Dmabuf, DmabufAllocator},
+         gbm::GbmAllocator,
+-        Allocator,
+     },
+     drm::{CreateDrmNodeError, DrmNode},
+     renderer::{
++        RendererSuper,
+         gles::{GlesError, GlesRenderer},
+         glow::GlowRenderer,
+         multigpu::{ApiDevice, Error as MultiError, GraphicsApi},
+-        RendererSuper,
+     },
+-    SwapBuffersError,
+ };
+ use std::{borrow::Borrow, cell::Cell};
+ use std::{
+diff --git a/src/backend/kms/render/pixman.rs b/src/backend/kms/render/pixman.rs
+index 27cc67323..c2a860380 100644
+--- a/src/backend/kms/render/pixman.rs
++++ b/src/backend/kms/render/pixman.rs
+@@ -7,9 +7,9 @@ use std::{
+ 
+ use smithay::backend::{
+     allocator::{
++        Allocator,
+         dmabuf::{AnyError, Dmabuf, DmabufAllocator},
+         gbm::{GbmAllocator, GbmBufferFlags, GbmDevice},
+-        Allocator,
+     },
+     drm::DrmNode,
+     renderer::{
+diff --git a/src/backend/kms/socket.rs b/src/backend/kms/socket.rs
+index 88070161d..6148f41f0 100644
+--- a/src/backend/kms/socket.rs
++++ b/src/backend/kms/socket.rs
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-3.0-only
+ 
+-use anyhow::{anyhow, Context, Result};
++use anyhow::{Context, Result, anyhow};
+ use smithay::{
+     backend::{
+         allocator::format::FormatSet,
+@@ -8,7 +8,7 @@ use smithay::{
+     },
+     reexports::{
+         calloop::RegistrationToken,
+-        wayland_server::{backend::GlobalId, Client, DisplayHandle},
++        wayland_server::{Client, DisplayHandle, backend::GlobalId},
+     },
+     wayland::{
+         dmabuf::{DmabufFeedbackBuilder, DmabufGlobal},
+@@ -18,7 +18,7 @@ use smithay::{
+ use std::sync::Arc;
+ use tracing::{info, warn};
+ 
+-use crate::state::{advertised_node_for_client, ClientState, State};
++use crate::state::{ClientState, State, advertised_node_for_client};
+ 
+ #[derive(Debug)]
+ pub struct Socket {
+diff --git a/src/backend/kms/surface/mod.rs b/src/backend/kms/surface/mod.rs
+index 8b963e006..fe5102e68 100644
+--- a/src/backend/kms/surface/mod.rs
++++ b/src/backend/kms/surface/mod.rs
+@@ -2,9 +2,10 @@
+ 
+ use crate::{
+     backend::render::{
++        CLEAR_COLOR, CursorMode, GlMultiError, GlMultiRenderer, PostprocessOutputConfig,
++        PostprocessShader, PostprocessState,
+         element::{CosmicElement, DamageElement},
+-        init_shaders, output_elements, CursorMode, GlMultiError, GlMultiRenderer,
+-        PostprocessOutputConfig, PostprocessShader, PostprocessState, CLEAR_COLOR,
++        init_shaders, output_elements,
+     },
+     config::ScreenFilter,
+     shell::Shell,
+@@ -13,7 +14,7 @@ use crate::{
+     wayland::{
+         handlers::{
+             compositor::recursive_frame_time_estimation,
+-            screencopy::{submit_buffer, FrameHolder, PendingImageCopyData, SessionData},
++            screencopy::{FrameHolder, PendingImageCopyData, SessionData, submit_buffer},
+         },
+         protocols::screencopy::{
+             FailureReason, Frame as ScreencopyFrame, SessionRef as ScreencopySessionRef,
+@@ -27,11 +28,12 @@ use cosmic_comp_config::output::comp::AdaptiveSync;
+ use smithay::{
+     backend::{
+         allocator::{
++            Fourcc,
+             format::FormatSet,
+             gbm::{GbmAllocator, GbmBuffer},
+-            Fourcc,
+         },
+         drm::{
++            DrmDeviceFd, DrmEventMetadata, DrmEventTime, DrmNode, VrrSupport,
+             compositor::{
+                 BlitFrameResultError, FrameError, FrameFlags, PrimaryPlaneElement,
+                 RenderFrameResult,
+@@ -39,38 +41,36 @@ use smithay::{
+             exporter::gbm::GbmFramebufferExporter,
+             gbm::GbmFramebuffer,
+             output::DrmOutput,
+-            DrmDeviceFd, DrmEventMetadata, DrmEventTime, DrmNode, VrrSupport,
+         },
+         egl::EGLContext,
+         renderer::{
+-            buffer_dimensions, buffer_type,
++            Bind, Blit, BufferType, Frame, ImportDma, Offscreen, Renderer, RendererSuper, Texture,
++            TextureFilter, buffer_dimensions, buffer_type,
+             damage::Error as RenderError,
+             element::{
++                Element, Kind, RenderElementStates,
+                 texture::TextureRenderElement,
+                 utils::{
+-                    constrain_render_elements, ConstrainAlign, ConstrainScaleBehavior, Relocate,
+-                    RelocateRenderElement,
++                    ConstrainAlign, ConstrainScaleBehavior, Relocate, RelocateRenderElement,
++                    constrain_render_elements,
+                 },
+-                Element, Kind, RenderElementStates,
+             },
+             gles::{
+-                element::TextureShaderElement, GlesRenderbuffer, GlesRenderer, GlesTexture, Uniform,
++                GlesRenderbuffer, GlesRenderer, GlesTexture, Uniform, element::TextureShaderElement,
+             },
+             glow::GlowRenderer,
+             multigpu::{ApiDevice, Error as MultiError, GpuManager},
+             sync::SyncPoint,
+             utils::with_renderer_surface_state,
+-            Bind, Blit, BufferType, Frame, ImportDma, Offscreen, Renderer, RendererSuper, Texture,
+-            TextureFilter,
+         },
+     },
+     desktop::utils::OutputPresentationFeedback,
+     output::{Output, OutputNoMode},
+     reexports::{
+         calloop::{
+-            channel::{channel, Event, Sender},
+-            timer::{TimeoutAction, Timer},
+             EventLoop, LoopHandle, RegistrationToken,
++            channel::{Event, Sender, channel},
++            timer::{TimeoutAction, Timer},
+         },
+         drm::control::{connector, crtc},
+         wayland_protocols::wp::{
+@@ -81,7 +81,7 @@ use smithay::{
+     },
+     utils::{Clock, Monotonic, Physical, Point, Rectangle, Transform},
+     wayland::{
+-        dmabuf::{get_dmabuf, DmabufFeedbackBuilder},
++        dmabuf::{DmabufFeedbackBuilder, get_dmabuf},
+         presentation::Refresh,
+         seat::WaylandFocus,
+         shm::{shm_format_to_fourcc, with_buffer_contents},
+@@ -91,12 +91,12 @@ use tracing::{error, info, trace, warn};
+ 
+ use std::{
+     borrow::{Borrow, BorrowMut},
+-    collections::{hash_map, HashMap, HashSet},
++    collections::{HashMap, HashSet, hash_map},
+     mem,
+     sync::{
++        Arc, RwLock,
+         atomic::{AtomicBool, Ordering},
+         mpsc::{Receiver, SyncSender},
+-        Arc, RwLock,
+     },
+     thread::JoinHandle,
+     time::Duration,
+diff --git a/src/backend/mod.rs b/src/backend/mod.rs
+index 14ad9e527..58526b2b2 100644
+--- a/src/backend/mod.rs
++++ b/src/backend/mod.rs
+@@ -2,7 +2,7 @@
+ 
+ use crate::state::State;
+ use crate::wayland::protocols::a11y::A11yHandler;
+-use anyhow::{anyhow, Context, Result};
++use anyhow::{Context, Result, anyhow};
+ use cosmic_comp_config::NumlockState;
+ use cosmic_config::CosmicConfigEntry;
+ use cosmic_settings_daemon_config::greeter;
+diff --git a/src/backend/render/cursor.rs b/src/backend/render/cursor.rs
+index b80fe1772..76426c5ec 100644
+--- a/src/backend/render/cursor.rs
++++ b/src/backend/render/cursor.rs
+@@ -5,17 +5,17 @@ use smithay::{
+     backend::{
+         allocator::Fourcc,
+         renderer::{
++            ImportAll, ImportMem, Renderer,
+             element::{
+-                memory::{MemoryRenderBuffer, MemoryRenderBufferRenderElement},
+-                surface::{render_elements_from_surface_tree, WaylandSurfaceRenderElement},
+                 Kind,
++                memory::{MemoryRenderBuffer, MemoryRenderBufferRenderElement},
++                surface::{WaylandSurfaceRenderElement, render_elements_from_surface_tree},
+             },
+-            ImportAll, ImportMem, Renderer,
+         },
+     },
+     input::{
+-        pointer::{CursorIcon, CursorImageAttributes, CursorImageStatus},
+         Seat,
++        pointer::{CursorIcon, CursorImageAttributes, CursorImageStatus},
+     },
+     reexports::wayland_server::protocol::wl_surface,
+     render_elements,
+@@ -27,8 +27,8 @@ use smithay::{
+ use std::{collections::HashMap, io::Read, sync::Mutex};
+ use tracing::warn;
+ use xcursor::{
+-    parser::{parse_xcursor, Image},
+     CursorTheme,
++    parser::{Image, parse_xcursor},
+ };
+ 
+ static FALLBACK_CURSOR_DATA: &[u8] = include_bytes!("../../../resources/cursor.rgba");
+@@ -287,10 +287,9 @@ where
+         let actual_scale = (frame.size / state.size()).max(1);
+ 
+         let pointer_images = &mut state.image_cache;
+-        let maybe_image =
+-            pointer_images
+-                .iter()
+-                .find_map(|(image, texture)| if image == &frame { Some(texture) } else { None });
++        let maybe_image = pointer_images
++            .iter()
++            .find_map(|(image, texture)| if image == &frame { Some(texture) } else { None });
+         let pointer_image = match maybe_image {
+             Some(image) => image,
+             None => {
+diff --git a/src/backend/render/element.rs b/src/backend/render/element.rs
+index ac4d0b64d..d539a058b 100644
+--- a/src/backend/render/element.rs
++++ b/src/backend/render/element.rs
+@@ -4,21 +4,21 @@ use crate::shell::{CosmicMappedRenderElement, WorkspaceRenderElement};
+ use smithay::backend::renderer::{element::texture::TextureRenderElement, gles::GlesTexture};
+ use smithay::{
+     backend::renderer::{
++        ImportAll, ImportMem, Renderer,
+         element::{
++            Element, Id, Kind, RenderElement, UnderlyingStorage,
+             memory::MemoryRenderBufferRenderElement,
+             surface::WaylandSurfaceRenderElement,
+             utils::{CropRenderElement, Relocate, RelocateRenderElement, RescaleRenderElement},
+-            Element, Id, Kind, RenderElement, UnderlyingStorage,
+         },
+-        gles::{element::TextureShaderElement, GlesError},
++        gles::{GlesError, element::TextureShaderElement},
+         glow::{GlowFrame, GlowRenderer},
+         utils::{CommitCounter, DamageSet, OpaqueRegions},
+-        ImportAll, ImportMem, Renderer,
+     },
+     utils::{Buffer as BufferCoords, Logical, Physical, Point, Rectangle, Scale},
+ };
+ 
+-use super::{cursor::CursorRenderElement, GlMultiRenderer};
++use super::{GlMultiRenderer, cursor::CursorRenderElement};
+ 
+ pub enum CosmicElement<R>
+ where
+diff --git a/src/backend/render/mod.rs b/src/backend/render/mod.rs
+index b5737c708..9b9faa99b 100644
+--- a/src/backend/render/mod.rs
++++ b/src/backend/render/mod.rs
+@@ -15,20 +15,20 @@ use crate::{
+     backend::{kms::render::gles::GbmGlowBackend, render::element::DamageElement},
+     config::ScreenFilter,
+     shell::{
++        CosmicMappedRenderElement, OverviewMode, SeatExt, Trigger, WorkspaceDelta,
++        WorkspaceRenderElement,
+         element::CosmicMappedKey,
+-        focus::{render_input_order, target::WindowGroup, FocusTarget, Stage},
++        focus::{FocusTarget, Stage, render_input_order, target::WindowGroup},
+         grabs::{SeatMenuGrabState, SeatMoveGrabState},
+         layout::tiling::ANIMATION_DURATION,
+         zoom::ZoomState,
+-        CosmicMappedRenderElement, OverviewMode, SeatExt, Trigger, WorkspaceDelta,
+-        WorkspaceRenderElement,
+     },
+     utils::{prelude::*, quirks::workspace_overview_is_open},
+     wayland::{
+         handlers::{
+             compositor::FRAME_TIME_FILTER,
+             data_device::get_dnd_icon,
+-            screencopy::{render_session, FrameHolder, SessionData},
++            screencopy::{FrameHolder, SessionData, render_session},
+         },
+         protocols::workspace::WorkspaceHandle,
+     },
+@@ -38,29 +38,29 @@ use cosmic::Theme;
+ use element::FromGlesError;
+ use smithay::{
+     backend::{
+-        allocator::{dmabuf::Dmabuf, Fourcc},
++        allocator::{Fourcc, dmabuf::Dmabuf},
+         drm::{DrmDeviceFd, DrmNode},
+         renderer::{
++            Bind, Blit, Color32F, ExportMem, ImportAll, ImportMem, Offscreen, Renderer, Texture,
++            TextureFilter,
+             damage::{Error as RenderError, OutputDamageTracker, RenderOutputResult},
+             element::{
+-                surface::{render_elements_from_surface_tree, WaylandSurfaceRenderElement},
++                Element, Id, Kind, RenderElement, WeakId,
++                surface::{WaylandSurfaceRenderElement, render_elements_from_surface_tree},
+                 texture::{TextureRenderBuffer, TextureRenderElement},
+                 utils::{
+-                    constrain_render_elements, ConstrainAlign, ConstrainScaleBehavior,
+-                    CropRenderElement, Relocate, RelocateRenderElement, RescaleRenderElement,
++                    ConstrainAlign, ConstrainScaleBehavior, CropRenderElement, Relocate,
++                    RelocateRenderElement, RescaleRenderElement, constrain_render_elements,
+                 },
+-                Element, Id, Kind, RenderElement, WeakId,
+             },
+             gles::{
+-                element::{PixelShaderElement, TextureShaderElement},
+                 GlesError, GlesPixelProgram, GlesRenderer, GlesTexProgram, GlesTexture, Uniform,
+                 UniformName, UniformType,
++                element::{PixelShaderElement, TextureShaderElement},
+             },
+             glow::GlowRenderer,
+             multigpu::{Error as MultiError, MultiFrame, MultiRenderer},
+             sync::SyncPoint,
+-            Bind, Blit, Color32F, ExportMem, ImportAll, ImportMem, Offscreen, Renderer, Texture,
+-            TextureFilter,
+         },
+     },
+     input::Seat,
+@@ -592,21 +592,23 @@ where
+         let scale = output.current_scale().fractional_scale();
+ 
+         if let Some((state, timings)) = _fps {
+-            vec![fps_ui(
+-                _gpu,
+-                debug_active,
+-                &seats,
+-                renderer.glow_renderer_mut(),
+-                state,
+-                timings,
+-                Rectangle::from_size(
+-                    (output_geo.size.w.min(400), output_geo.size.h.min(800)).into(),
+-                ),
+-                scale,
+-            )
+-            .map_err(FromGlesError::from_gles_error)
+-            .map_err(RenderError::Rendering)?
+-            .into()]
++            vec![
++                fps_ui(
++                    _gpu,
++                    debug_active,
++                    &seats,
++                    renderer.glow_renderer_mut(),
++                    state,
++                    timings,
++                    Rectangle::from_size(
++                        (output_geo.size.w.min(400), output_geo.size.h.min(800)).into(),
++                    ),
++                    scale,
++                )
++                .map_err(FromGlesError::from_gles_error)
++                .map_err(RenderError::Rendering)?
++                .into(),
++            ]
+         } else {
+             Vec::new()
+         }
+diff --git a/src/backend/winit.rs b/src/backend/winit.rs
+index 1e79c42bb..984c95b48 100644
+--- a/src/backend/winit.rs
++++ b/src/backend/winit.rs
+@@ -7,23 +7,23 @@ use crate::{
+     state::{BackendData, Common},
+     utils::prelude::*,
+ };
+-use anyhow::{anyhow, Context, Result};
++use anyhow::{Context, Result, anyhow};
+ use cosmic_comp_config::output::comp::{OutputConfig, TransformDef};
+ use smithay::{
+     backend::{
+         drm::NodeType,
+         egl::EGLDevice,
+         renderer::{
++            ImportDma,
+             damage::{OutputDamageTracker, RenderOutputResult},
+             glow::GlowRenderer,
+-            ImportDma,
+         },
+         winit::{self, WinitEvent, WinitGraphicsBackend, WinitVirtualDevice},
+     },
+     desktop::layer_map_for_output,
+     output::{Mode, Output, PhysicalProperties, Scale, Subpixel},
+     reexports::{
+-        calloop::{ping, EventLoop},
++        calloop::{EventLoop, ping},
+         wayland_protocols::wp::presentation_time::server::wp_presentation_feedback,
+         wayland_server::DisplayHandle,
+         winit::platform::pump_events::PumpStatus,
+@@ -34,7 +34,7 @@ use smithay::{
+ use std::{borrow::BorrowMut, cell::RefCell, time::Duration};
+ use tracing::{error, info, warn};
+ 
+-use super::render::{init_shaders, CursorMode, ScreenFilterStorage};
++use super::render::{CursorMode, ScreenFilterStorage, init_shaders};
+ 
+ #[derive(Debug)]
+ pub struct WinitState {
+diff --git a/src/backend/x11.rs b/src/backend/x11.rs
+index d07b9c142..18ddb8aee 100644
+--- a/src/backend/x11.rs
++++ b/src/backend/x11.rs
+@@ -7,7 +7,7 @@ use crate::{
+     state::{BackendData, Common},
+     utils::prelude::*,
+ };
+-use anyhow::{anyhow, Context, Result};
++use anyhow::{Context, Result, anyhow};
+ use cosmic_comp_config::output::comp::OutputConfig;
+ use smithay::{
+     backend::{
+@@ -20,17 +20,17 @@ use smithay::{
+         egl::{EGLContext, EGLDevice, EGLDisplay},
+         input::{Event, InputEvent},
+         renderer::{
++            Bind, ImportDma,
+             damage::{OutputDamageTracker, RenderOutputResult},
+             glow::GlowRenderer,
+-            Bind, ImportDma,
+         },
+-        vulkan::{version::Version, Instance, PhysicalDevice},
++        vulkan::{Instance, PhysicalDevice, version::Version},
+         x11::{Window, WindowBuilder, X11Backend, X11Event, X11Handle, X11Input, X11Surface},
+     },
+     desktop::layer_map_for_output,
+     output::{Mode, Output, PhysicalProperties, Scale, Subpixel},
+     reexports::{
+-        calloop::{ping, EventLoop, LoopHandle},
++        calloop::{EventLoop, LoopHandle, ping},
+         gbm::Device as GbmDevice,
+         wayland_protocols::wp::presentation_time::server::wp_presentation_feedback,
+         wayland_server::DisplayHandle,
+@@ -41,7 +41,7 @@ use smithay::{
+ use std::{borrow::BorrowMut, cell::RefCell, os::unix::io::OwnedFd, time::Duration};
+ use tracing::{debug, error, info, warn};
+ 
+-use super::render::{init_shaders, ScreenFilterStorage};
++use super::render::{ScreenFilterStorage, init_shaders};
+ 
+ #[derive(Debug)]
+ enum Allocator {
+diff --git a/src/config/mod.rs b/src/config/mod.rs
+index 2febc075c..ea5428efe 100644
+--- a/src/config/mod.rs
++++ b/src/config/mod.rs
+@@ -11,13 +11,13 @@ use crate::{
+ use anyhow::Context;
+ use cosmic_config::{ConfigGet, CosmicConfigEntry};
+ use cosmic_settings_config::window_rules::ApplicationException;
+-use cosmic_settings_config::{shortcuts, window_rules, Shortcuts};
++use cosmic_settings_config::{Shortcuts, shortcuts, window_rules};
+ use serde::{Deserialize, Serialize};
+ use smithay::utils::{Clock, Monotonic};
+ use smithay::wayland::xdg_activation::XdgActivationState;
+ pub use smithay::{
+     backend::input::{self as smithay_input, KeyState},
+-    input::keyboard::{keysyms as KeySyms, Keysym, ModifiersState},
++    input::keyboard::{Keysym, ModifiersState, keysyms as KeySyms},
+     output::{Mode, Output},
+     reexports::{
+         calloop::LoopHandle,
+@@ -26,7 +26,7 @@ pub use smithay::{
+             TapButtonMap,
+         },
+     },
+-    utils::{Logical, Physical, Point, Size, Transform, SERIAL_COUNTER},
++    utils::{Logical, Physical, Point, SERIAL_COUNTER, Size, Transform},
+ };
+ use std::{
+     cell::{Ref, RefCell},
+@@ -34,7 +34,7 @@ use std::{
+     fs::OpenOptions,
+     io::Write,
+     path::PathBuf,
+-    sync::{atomic::AtomicBool, Arc},
++    sync::{Arc, atomic::AtomicBool},
+ };
+ use tracing::{error, warn};
+ 
+@@ -45,13 +45,13 @@ mod types;
+ use cosmic::config::CosmicTk;
+ pub use cosmic_comp_config::EdidProduct;
+ use cosmic_comp_config::{
++    CosmicCompConfig, KeyboardConfig, TileBehavior, XkbConfig, XwaylandDescaling,
++    XwaylandEavesdropping, ZoomConfig,
+     input::{DeviceState as InputDeviceState, InputConfig, TouchpadOverride},
+     output::comp::{
+-        load_outputs, OutputConfig, OutputInfo, OutputState, OutputsConfig, TransformDef,
++        OutputConfig, OutputInfo, OutputState, OutputsConfig, TransformDef, load_outputs,
+     },
+     workspace::WorkspaceConfig,
+-    CosmicCompConfig, KeyboardConfig, TileBehavior, XkbConfig, XwaylandDescaling,
+-    XwaylandEavesdropping, ZoomConfig,
+ };
+ pub use key_bindings::{Action, PrivateAction};
+ use types::WlXkbConfig;
+diff --git a/src/dbus/mod.rs b/src/dbus/mod.rs
+index 6f5789283..d66fa6658 100644
+--- a/src/dbus/mod.rs
++++ b/src/dbus/mod.rs
+@@ -7,7 +7,7 @@ use calloop::{InsertError, LoopHandle, RegistrationToken};
+ use cosmic_comp_config::output::comp::OutputState;
+ use std::collections::HashMap;
+ use tracing::{error, warn};
+-use zbus::blocking::{fdo::DBusProxy, Connection};
++use zbus::blocking::{Connection, fdo::DBusProxy};
+ 
+ #[cfg(feature = "systemd")]
+ pub mod logind;
+diff --git a/src/debug.rs b/src/debug.rs
+index f55b8df44..f4218ef6d 100644
+--- a/src/debug.rs
++++ b/src/debug.rs
+@@ -1,9 +1,9 @@
+ // SPDX-License-Identifier: GPL-3.0-only
+ 
+ use crate::{
++    State,
+     backend::kms::Timings,
+     shell::focus::target::{KeyboardFocusTarget, PointerFocusTarget, PointerFocusToplevel},
+-    State,
+ };
+ use egui::Color32;
+ use smithay::{
+@@ -16,7 +16,7 @@ use smithay::{
+         },
+     },
+     desktop::WindowSurface,
+-    input::{keyboard::xkb, Seat},
++    input::{Seat, keyboard::xkb},
+     reexports::wayland_server::Resource,
+     utils::{Logical, Rectangle, Time},
+ };
+diff --git a/src/input/actions.rs b/src/input/actions.rs
+index befd06adc..9fa356b4f 100644
+--- a/src/input/actions.rs
++++ b/src/input/actions.rs
+@@ -3,21 +3,21 @@
+ use crate::{
+     config::{Action, PrivateAction},
+     shell::{
+-        focus::{target::KeyboardFocusTarget, FocusTarget},
+-        layout::tiling::SwapWindowGrab,
+         FocusResult, InvalidWorkspaceIndex, MoveResult, SeatExt, Trigger, WorkspaceDelta,
++        focus::{FocusTarget, target::KeyboardFocusTarget},
++        layout::tiling::SwapWindowGrab,
+     },
+     utils::prelude::*,
+     wayland::{
+         handlers::xdg_activation::ActivationContext, protocols::workspace::WorkspaceUpdateGuard,
+     },
+ };
+-use cosmic_comp_config::{workspace::WorkspaceLayout, TileBehavior};
++use cosmic_comp_config::{TileBehavior, workspace::WorkspaceLayout};
+ use cosmic_config::ConfigSet;
+ use cosmic_settings_config::shortcuts;
+ use cosmic_settings_config::shortcuts::action::{Direction, FocusDirection};
+ use smithay::{
+-    input::{pointer::MotionEvent, Seat},
++    input::{Seat, pointer::MotionEvent},
+     utils::{Point, Serial},
+ };
+ #[cfg(not(feature = "debug"))]
+diff --git a/src/input/mod.rs b/src/input/mod.rs
+index c6f3c7414..31d540dd0 100644
+--- a/src/input/mod.rs
++++ b/src/input/mod.rs
+@@ -3,18 +3,18 @@
+ use crate::{
+     backend::render::ElementFilter,
+     config::{
++        Action, Config, PrivateAction,
+         key_bindings::{
+             cosmic_keystate_from_smithay, cosmic_modifiers_eq_smithay,
+             cosmic_modifiers_from_smithay,
+         },
+-        Action, Config, PrivateAction,
+     },
+     input::gestures::{GestureState, SwipeAction},
+     shell::{
++        LastModifierChange, SeatExt, Trigger,
+         focus::{
+-            render_input_order,
++            Stage, render_input_order,
+             target::{KeyboardFocusTarget, PointerFocusTarget},
+-            Stage,
+         },
+         grabs::{ReleaseMode, ResizeEdge},
+         layout::{
+@@ -22,7 +22,6 @@ use crate::{
+             tiling::{NodeDesc, SwapWindowGrab, TilingLayout},
+         },
+         zoom::ZoomState,
+-        LastModifierChange, SeatExt, Trigger,
+     },
+     utils::{float::NextDown, prelude::*, quirks::workspace_overview_is_open},
+     wayland::{
+@@ -31,10 +30,10 @@ use crate::{
+     },
+ };
+ use calloop::{
+-    timer::{TimeoutAction, Timer},
+     RegistrationToken,
++    timer::{TimeoutAction, Timer},
+ };
+-use cosmic_comp_config::{workspace::WorkspaceLayout, NumlockState};
++use cosmic_comp_config::{NumlockState, workspace::WorkspaceLayout};
+ use cosmic_settings_config::shortcuts;
+ use cosmic_settings_config::shortcuts::action::{Direction, ResizeDirection};
+ use smithay::{
+@@ -45,8 +44,9 @@ use smithay::{
+         SwitchState, SwitchToggleEvent, TabletToolButtonEvent, TabletToolEvent,
+         TabletToolProximityEvent, TabletToolTipEvent, TabletToolTipState, TouchEvent,
+     },
+-    desktop::{utils::under_from_surface_tree, PopupKeyboardGrab, WindowSurfaceType},
++    desktop::{PopupKeyboardGrab, WindowSurfaceType, utils::under_from_surface_tree},
+     input::{
++        Seat,
+         keyboard::{FilterResult, KeysymHandle, ModifiersState},
+         pointer::{
+             AxisFrame, ButtonEvent, GestureHoldBeginEvent, GestureHoldEndEvent,
+@@ -55,16 +55,15 @@ use smithay::{
+             PointerGrab, RelativeMotionEvent,
+         },
+         touch::{DownEvent, MotionEvent as TouchMotionEvent, UpEvent},
+-        Seat,
+     },
+     output::Output,
+     reexports::{
+         input::Device as InputDevice, wayland_server::protocol::wl_shm::Format as ShmFormat,
+     },
+-    utils::{Point, Rectangle, Serial, SERIAL_COUNTER},
++    utils::{Point, Rectangle, SERIAL_COUNTER, Serial},
+     wayland::{
+         keyboard_shortcuts_inhibit::KeyboardShortcutsInhibitorSeat,
+-        pointer_constraints::{with_pointer_constraint, PointerConstraint},
++        pointer_constraints::{PointerConstraint, with_pointer_constraint},
+         seat::WaylandFocus,
+         tablet_manager::{TabletDescriptor, TabletSeatTrait},
+     },
+diff --git a/src/logger/mod.rs b/src/logger/mod.rs
+index 1f003ccf0..3e5347df0 100644
+--- a/src/logger/mod.rs
++++ b/src/logger/mod.rs
+@@ -6,7 +6,7 @@ use anyhow::Result;
+ 
+ use tracing::{debug, info, warn};
+ use tracing_journald as journald;
+-use tracing_subscriber::{filter::Directive, fmt, prelude::*, EnvFilter};
++use tracing_subscriber::{EnvFilter, filter::Directive, fmt, prelude::*};
+ 
+ pub fn init_logger() -> Result<()> {
+     let level = if cfg!(debug_assertions) {
+diff --git a/src/main.rs b/src/main.rs
+index 5edcb8f8d..73332e90f 100644
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -3,7 +3,7 @@
+ use calloop::timer::{TimeoutAction, Timer};
+ use smithay::{
+     reexports::{
+-        calloop::{generic::Generic, EventLoop, Interest, Mode, PostAction},
++        calloop::{EventLoop, Interest, Mode, PostAction, generic::Generic},
+         wayland_server::{Display, DisplayHandle},
+     },
+     wayland::socket::ListeningSocketSource,
+diff --git a/src/session.rs b/src/session.rs
+index 6c61fb6da..86eef39e6 100644
+--- a/src/session.rs
++++ b/src/session.rs
+@@ -1,11 +1,11 @@
+ // SPDX-License-Identifier: GPL-3.0-only
+ 
+ use smithay::reexports::{
+-    calloop::{generic::Generic, Interest, LoopHandle, Mode, PostAction},
++    calloop::{Interest, LoopHandle, Mode, PostAction, generic::Generic},
+     rustix,
+ };
+ 
+-use anyhow::{anyhow, Context, Result};
++use anyhow::{Context, Result, anyhow};
+ use sendfd::RecvWithFd;
+ use serde::{Deserialize, Serialize};
+ use std::{
+diff --git a/src/shell/element/mod.rs b/src/shell/element/mod.rs
+index 99f96891b..3c444414a 100644
+--- a/src/shell/element/mod.rs
++++ b/src/shell/element/mod.rs
+@@ -9,21 +9,21 @@ use smithay::{
+     backend::{
+         input::KeyState,
+         renderer::{
++            ImportAll, ImportMem, Renderer,
+             element::{
++                Element, RenderElement, UnderlyingStorage,
+                 memory::MemoryRenderBufferRenderElement,
+                 utils::{CropRenderElement, RelocateRenderElement, RescaleRenderElement},
+-                Element, RenderElement, UnderlyingStorage,
+             },
+             gles::element::PixelShaderElement,
+             glow::GlowRenderer,
+             utils::{DamageSet, OpaqueRegions},
+-            ImportAll, ImportMem, Renderer,
+         },
+     },
+-    desktop::{space::SpaceElement, WindowSurfaceType},
++    desktop::{WindowSurfaceType, space::SpaceElement},
+     input::{
+-        keyboard::{KeyboardTarget, KeysymHandle, ModifiersState},
+         Seat,
++        keyboard::{KeyboardTarget, KeysymHandle, ModifiersState},
+     },
+     output::Output,
+     reexports::wayland_server::{backend::ObjectId, protocol::wl_surface::WlSurface},
+@@ -32,7 +32,7 @@ use smithay::{
+         Buffer as BufferCoords, IsAlive, Logical, Physical, Point, Rectangle, Scale, Serial, Size,
+     },
+     wayland::seat::WaylandFocus,
+-    xwayland::{xwm::X11Relatable, X11Surface},
++    xwayland::{X11Surface, xwm::X11Relatable},
+ };
+ use stack::CosmicStackInternal;
+ use window::CosmicWindowInternal;
+@@ -41,7 +41,7 @@ use std::{
+     borrow::Cow,
+     fmt,
+     hash::Hash,
+-    sync::{atomic::AtomicBool, Arc, Mutex, Weak},
++    sync::{Arc, Mutex, Weak, atomic::AtomicBool},
+ };
+ 
+ pub mod surface;
+@@ -65,12 +65,12 @@ use smithay::desktop::WindowSurface;
+ use tracing::debug;
+ 
+ use super::{
++    ManagedLayer,
+     focus::target::PointerFocusTarget,
+     layout::{
+         floating::{ResizeState, TiledCorners},
+         tiling::NodeDesc,
+     },
+-    ManagedLayer,
+ };
+ use cosmic_settings_config::shortcuts::action::{Direction, FocusDirection};
+ 
+@@ -821,10 +821,10 @@ impl CosmicMapped {
+     pub fn key(&self) -> CosmicMappedKey {
+         CosmicMappedKey(match &self.element {
+             CosmicMappedInternal::Stack(stack) => {
+-                CosmicMappedKeyInner::Stack(Arc::downgrade(&stack.0 .0))
++                CosmicMappedKeyInner::Stack(Arc::downgrade(&stack.0.0))
+             }
+             CosmicMappedInternal::Window(window) => {
+-                CosmicMappedKeyInner::Window(Arc::downgrade(&window.0 .0))
++                CosmicMappedKeyInner::Window(Arc::downgrade(&window.0.0))
+             }
+             _ => unreachable!(),
+         })
+diff --git a/src/shell/element/resize_indicator.rs b/src/shell/element/resize_indicator.rs
+index 21f73428b..84e1ba0d3 100644
+--- a/src/shell/element/resize_indicator.rs
++++ b/src/shell/element/resize_indicator.rs
+@@ -9,14 +9,14 @@ use crate::{
+ 
+ use calloop::LoopHandle;
+ use cosmic::{
++    Apply,
+     iced::{
+-        widget::{column, container, horizontal_space, row, vertical_space},
+         Alignment,
++        widget::{column, container, horizontal_space, row, vertical_space},
+     },
+     iced_core::{Background, Border, Color, Length},
+     theme,
+     widget::{icon::from_name, text},
+-    Apply,
+ };
+ use cosmic_settings_config::shortcuts::action::{Action, ResizeDirection};
+ use smithay::utils::Size;
+diff --git a/src/shell/element/stack.rs b/src/shell/element/stack.rs
+index e277d5ef6..ceb566a59 100644
+--- a/src/shell/element/stack.rs
++++ b/src/shell/element/stack.rs
+@@ -1,6 +1,6 @@
+ use super::{
+-    window::{Focus, RESIZE_BORDER},
+     CosmicSurface,
++    window::{Focus, RESIZE_BORDER},
+ };
+ use crate::{
+     backend::render::cursor::CursorState,
+@@ -17,11 +17,12 @@ use crate::{
+ };
+ use calloop::LoopHandle;
+ use cosmic::{
+-    iced::{id::Id, widget as iced_widget, Alignment},
+-    iced_core::{border::Radius, Background, Border, Color, Length},
++    Apply, Element as CosmicElement, Theme,
++    iced::{Alignment, id::Id, widget as iced_widget},
++    iced_core::{Background, Border, Color, Length, border::Radius},
+     iced_runtime::Task,
+     iced_widget::scrollable::AbsoluteOffset,
+-    theme, widget as cosmic_widget, Apply, Element as CosmicElement, Theme,
++    theme, widget as cosmic_widget,
+ };
+ use cosmic_settings_config::shortcuts;
+ use shortcuts::action::{Direction, FocusDirection};
+@@ -29,15 +30,16 @@ use smithay::{
+     backend::{
+         input::KeyState,
+         renderer::{
++            ImportAll, ImportMem, Renderer,
+             element::{
+-                memory::MemoryRenderBufferRenderElement, surface::WaylandSurfaceRenderElement,
+-                AsRenderElements,
++                AsRenderElements, memory::MemoryRenderBufferRenderElement,
++                surface::WaylandSurfaceRenderElement,
+             },
+-            ImportAll, ImportMem, Renderer,
+         },
+     },
+-    desktop::{space::SpaceElement, WindowSurfaceType},
++    desktop::{WindowSurfaceType, space::SpaceElement},
+     input::{
++        Seat,
+         keyboard::{KeyboardTarget, KeysymHandle, ModifiersState},
+         pointer::{
+             AxisFrame, ButtonEvent, CursorImageStatus, GestureHoldBeginEvent, GestureHoldEndEvent,
+@@ -49,7 +51,6 @@ use smithay::{
+             DownEvent, MotionEvent as TouchMotionEvent, OrientationEvent, ShapeEvent, TouchTarget,
+             UpEvent,
+         },
+-        Seat,
+     },
+     output::Output,
+     reexports::wayland_server::protocol::wl_surface::WlSurface,
+@@ -62,8 +63,8 @@ use std::{
+     fmt,
+     hash::Hash,
+     sync::{
+-        atomic::{AtomicBool, AtomicU8, AtomicUsize, Ordering},
+         Arc, LazyLock, Mutex,
++        atomic::{AtomicBool, AtomicU8, AtomicUsize, Ordering},
+     },
+ };
+ 
+@@ -313,11 +314,7 @@ impl CosmicStack {
+                         if let Ok(old) =
+                             p.active
+                                 .fetch_update(Ordering::SeqCst, Ordering::SeqCst, |val| {
+-                                    if val < max - 1 {
+-                                        Some(val + 1)
+-                                    } else {
+-                                        None
+-                                    }
++                                    if val < max - 1 { Some(val + 1) } else { None }
+                                 })
+                         {
+                             p.previous_keyboard.store(old, Ordering::SeqCst);
+diff --git a/src/shell/element/stack/tab.rs b/src/shell/element/stack/tab.rs
+index 858bcfe86..f8f3869d7 100644
+--- a/src/shell/element/stack/tab.rs
++++ b/src/shell/element/stack/tab.rs
+@@ -1,20 +1,19 @@
+ use cosmic::{
++    Apply,
+     font::Font,
+     iced::{
+-        widget::{self, container::draw_background, rule::FillMode},
+         Background,
++        widget::{self, container::draw_background, rule::FillMode},
+     },
+     iced_core::{
+-        alignment, event,
++        Border, Clipboard, Color, Length, Rectangle, Shell, Size, alignment, event,
+         layout::{Layout, Limits, Node},
+         mouse, overlay, renderer,
+-        widget::{operation::Operation, tree::Tree, Id, Widget},
+-        Border, Clipboard, Color, Length, Rectangle, Shell, Size,
++        widget::{Id, Widget, operation::Operation, tree::Tree},
+     },
+     iced_widget::scrollable::AbsoluteOffset,
+     theme,
+-    widget::{icon::from_name, Icon},
+-    Apply,
++    widget::{Icon, icon::from_name},
+ };
+ 
+ use super::tab_text::tab_text;
+diff --git a/src/shell/element/stack/tab_text.rs b/src/shell/element/stack/tab_text.rs
+index ef5b38f3d..3d67ab55c 100644
+--- a/src/shell/element/stack/tab_text.rs
++++ b/src/shell/element/stack/tab_text.rs
+@@ -1,15 +1,14 @@
+ use std::hash::{Hash, Hasher};
+ 
+ use cosmic::{
+-    iced::{alignment, Point},
++    iced::{Point, alignment},
+     iced_core::{
+-        gradient,
++        Background, Border, Color, Degrees, Gradient, Length, Rectangle, Size, Text, gradient,
+         layout::{Layout, Limits, Node},
+         mouse::Cursor,
+         renderer::{self, Renderer as IcedRenderer},
+         text::{LineHeight, Paragraph, Renderer as TextRenderer, Shaping},
+-        widget::{tree, Tree, Widget},
+-        Background, Border, Color, Degrees, Gradient, Length, Rectangle, Size, Text,
++        widget::{Tree, Widget, tree},
+     },
+ };
+ 
+diff --git a/src/shell/element/stack/tabs.rs b/src/shell/element/stack/tabs.rs
+index 66e06db10..fe084b555 100644
+--- a/src/shell/element/stack/tabs.rs
++++ b/src/shell/element/stack/tabs.rs
+@@ -1,25 +1,24 @@
+-use super::tab::{Tab, TabBackgroundTheme, TabMessage, TabRuleTheme, MIN_ACTIVE_TAB_WIDTH};
++use super::tab::{MIN_ACTIVE_TAB_WIDTH, Tab, TabBackgroundTheme, TabMessage, TabRuleTheme};
+ use cosmic::{
+-    iced::{id::Id, widget, Element},
++    Apply,
++    iced::{Element, id::Id, widget},
+     iced_core::{
+-        event,
++        Background, Border, Clipboard, Color, Length, Point, Rectangle, Renderer, Shell, Size,
++        Vector, event,
+         layout::{Layout, Limits, Node},
+         mouse, overlay, renderer,
+         widget::{
++            Widget,
+             operation::{
+-                scrollable::{AbsoluteOffset, RelativeOffset},
+                 Operation, Scrollable,
++                scrollable::{AbsoluteOffset, RelativeOffset},
+             },
+             tree::{self, Tree},
+-            Widget,
+         },
+-        Background, Border, Clipboard, Color, Length, Point, Rectangle, Renderer, Shell, Size,
+-        Vector,
+     },
+     iced_widget::container::draw_background,
+     theme,
+     widget::{container::Catalog, icon::from_name},
+-    Apply,
+ };
+ use keyframe::{
+     ease,
+diff --git a/src/shell/element/stack_hover.rs b/src/shell/element/stack_hover.rs
+index a260f9ea0..3f58daea4 100644
+--- a/src/shell/element/stack_hover.rs
++++ b/src/shell/element/stack_hover.rs
+@@ -5,14 +5,14 @@ use crate::{
+ 
+ use calloop::LoopHandle;
+ use cosmic::{
++    Apply,
+     iced::{
+-        widget::{container, row},
+         Alignment,
++        widget::{container, row},
+     },
+     iced_core::{Background, Border, Color, Length},
+     theme,
+     widget::{horizontal_space, icon::from_name, text},
+-    Apply,
+ };
+ use smithay::utils::{Logical, Size};
+ 
+diff --git a/src/shell/element/surface.rs b/src/shell/element/surface.rs
+index 14e5b3095..ac8f8e926 100644
+--- a/src/shell/element/surface.rs
++++ b/src/shell/element/surface.rs
+@@ -2,28 +2,28 @@ use crate::wayland::protocols::corner_radius::CacheableCorners;
+ use std::{
+     borrow::Cow,
+     sync::{
+-        atomic::{AtomicBool, Ordering},
+         Mutex,
++        atomic::{AtomicBool, Ordering},
+     },
+     time::Duration,
+ };
+ 
+ use smithay::{
+     backend::renderer::{
++        ImportAll, Renderer,
+         element::{
+-            surface::{render_elements_from_surface_tree, WaylandSurfaceRenderElement},
+-            utils::select_dmabuf_feedback,
+             AsRenderElements, Kind, RenderElementStates,
++            surface::{WaylandSurfaceRenderElement, render_elements_from_surface_tree},
++            utils::select_dmabuf_feedback,
+         },
+-        ImportAll, Renderer,
+     },
+     desktop::{
+-        space::SpaceElement, utils::OutputPresentationFeedback, PopupManager, Window,
+-        WindowSurface, WindowSurfaceType,
++        PopupManager, Window, WindowSurface, WindowSurfaceType, space::SpaceElement,
++        utils::OutputPresentationFeedback,
+     },
+     input::{
+-        keyboard::{KeyboardTarget, KeysymHandle, ModifiersState},
+         Seat,
++        keyboard::{KeyboardTarget, KeysymHandle, ModifiersState},
+     },
+     output::Output,
+     reexports::{
+@@ -38,14 +38,14 @@ use smithay::{
+         wayland_server::protocol::wl_surface::WlSurface,
+     },
+     utils::{
+-        user_data::UserDataMap, IsAlive, Logical, Physical, Point, Rectangle, Scale, Serial, Size,
++        IsAlive, Logical, Physical, Point, Rectangle, Scale, Serial, Size, user_data::UserDataMap,
+     },
+     wayland::{
+-        compositor::{with_states, with_surface_tree_downward, SurfaceData, TraversalAction},
++        compositor::{SurfaceData, TraversalAction, with_states, with_surface_tree_downward},
+         seat::WaylandFocus,
+         shell::xdg::{SurfaceCachedState, ToplevelSurface, XdgToplevelSurfaceData},
+     },
+-    xwayland::{xwm::X11Relatable, X11Surface},
++    xwayland::{X11Surface, xwm::X11Relatable},
+ };
+ use tracing::trace;
+ 
+diff --git a/src/shell/element/swap_indicator.rs b/src/shell/element/swap_indicator.rs
+index 13033b001..9bea44ec1 100644
+--- a/src/shell/element/swap_indicator.rs
++++ b/src/shell/element/swap_indicator.rs
+@@ -5,11 +5,11 @@ use crate::{
+ 
+ use calloop::LoopHandle;
+ use cosmic::{
++    Apply,
+     iced::widget::{container, horizontal_space, row},
+     iced_core::{Alignment, Background, Border, Color, Length},
+     theme,
+     widget::{icon::from_name, text},
+-    Apply,
+ };
+ use smithay::utils::Size;
+ 
+diff --git a/src/shell/element/window.rs b/src/shell/element/window.rs
+index b51252eb4..22ee024c6 100644
+--- a/src/shell/element/window.rs
++++ b/src/shell/element/window.rs
+@@ -16,15 +16,16 @@ use smithay::{
+     backend::{
+         input::KeyState,
+         renderer::{
++            ImportAll, ImportMem, Renderer,
+             element::{
+-                memory::MemoryRenderBufferRenderElement, surface::WaylandSurfaceRenderElement,
+-                AsRenderElements,
++                AsRenderElements, memory::MemoryRenderBufferRenderElement,
++                surface::WaylandSurfaceRenderElement,
+             },
+-            ImportAll, ImportMem, Renderer,
+         },
+     },
+-    desktop::{space::SpaceElement, WindowSurfaceType},
++    desktop::{WindowSurfaceType, space::SpaceElement},
+     input::{
++        Seat,
+         keyboard::{KeyboardTarget, KeysymHandle, ModifiersState},
+         pointer::{
+             AxisFrame, ButtonEvent, CursorIcon, CursorImageStatus, GestureHoldBeginEvent,
+@@ -36,7 +37,6 @@ use smithay::{
+             DownEvent, MotionEvent as TouchMotionEvent, OrientationEvent, ShapeEvent, TouchTarget,
+             UpEvent,
+         },
+-        Seat,
+     },
+     output::Output,
+     reexports::wayland_server::protocol::wl_surface::WlSurface,
+@@ -49,8 +49,8 @@ use std::{
+     fmt,
+     hash::Hash,
+     sync::{
+-        atomic::{AtomicBool, AtomicU8, Ordering},
+         Arc, Mutex,
++        atomic::{AtomicBool, AtomicU8, Ordering},
+     },
+ };
+ use wayland_backend::server::ObjectId;
+diff --git a/src/shell/focus/mod.rs b/src/shell/focus/mod.rs
+index 34dc80310..916b24935 100644
+--- a/src/shell/focus/mod.rs
++++ b/src/shell/focus/mod.rs
+@@ -1,16 +1,16 @@
+ use crate::{
+-    shell::{element::CosmicMapped, CosmicSurface, MinimizedWindow, Shell},
++    shell::{CosmicSurface, MinimizedWindow, Shell, element::CosmicMapped},
+     state::Common,
+     utils::prelude::*,
+     wayland::handlers::{xdg_shell::PopupGrabData, xwayland_keyboard_grab::XWaylandGrabSeatData},
+ };
+ use indexmap::IndexSet;
+ use smithay::{
+-    desktop::{layer_map_for_output, PopupUngrabStrategy},
+-    input::{pointer::MotionEvent, Seat},
++    desktop::{PopupUngrabStrategy, layer_map_for_output},
++    input::{Seat, pointer::MotionEvent},
+     output::Output,
+-    reexports::wayland_server::{protocol::wl_surface::WlSurface, Resource},
+-    utils::{IsAlive, Point, Serial, SERIAL_COUNTER},
++    reexports::wayland_server::{Resource, protocol::wl_surface::WlSurface},
++    utils::{IsAlive, Point, SERIAL_COUNTER, Serial},
+     wayland::{
+         seat::WaylandFocus,
+         selection::{data_device::set_data_device_focus, primary_selection::set_primary_focus},
+@@ -21,10 +21,10 @@ use std::{borrow::Cow, mem, sync::Mutex};
+ 
+ use tracing::{debug, trace};
+ 
+-pub use self::order::{render_input_order, Stage};
++pub use self::order::{Stage, render_input_order};
+ use self::target::{KeyboardFocusTarget, WindowGroup};
+ 
+-use super::{grabs::SeatMoveGrabState, layout::floating::FloatingLayout, SeatExt};
++use super::{SeatExt, grabs::SeatMoveGrabState, layout::floating::FloatingLayout};
+ 
+ mod order;
+ pub mod target;
+diff --git a/src/shell/focus/order.rs b/src/shell/focus/order.rs
+index e9ca57096..d0c39b40b 100644
+--- a/src/shell/focus/order.rs
++++ b/src/shell/focus/order.rs
+@@ -3,7 +3,7 @@ use std::{ops::ControlFlow, time::Instant};
+ use cosmic_comp_config::workspace::WorkspaceLayout;
+ use keyframe::{ease, functions::EaseInOutCubic};
+ use smithay::{
+-    desktop::{layer_map_for_output, LayerSurface, PopupKind, PopupManager},
++    desktop::{LayerSurface, PopupKind, PopupManager, layer_map_for_output},
+     output::{Output, OutputNoMode},
+     utils::{Logical, Point},
+     wayland::{session_lock::LockSurface, shell::wlr_layer::Layer},
+@@ -13,14 +13,14 @@ use smithay::{
+ use crate::{
+     backend::render::ElementFilter,
+     shell::{
++        SeatExt, Shell, Workspace, WorkspaceDelta,
+         focus::target::KeyboardFocusTarget,
+         layout::{floating::FloatingLayout, tiling::ANIMATION_DURATION},
+-        SeatExt, Shell, Workspace, WorkspaceDelta,
+     },
+     utils::{
+         geometry::*,
+         prelude::OutputExt,
+-        quirks::{workspace_overview_is_open, WORKSPACE_OVERVIEW_NAMESPACE},
++        quirks::{WORKSPACE_OVERVIEW_NAMESPACE, workspace_overview_is_open},
+     },
+     wayland::protocols::workspace::WorkspaceHandle,
+ };
+diff --git a/src/shell/focus/target.rs b/src/shell/focus/target.rs
+index f084cb352..c2d270b4e 100644
+--- a/src/shell/focus/target.rs
++++ b/src/shell/focus/target.rs
+@@ -2,10 +2,10 @@ use std::{borrow::Cow, sync::Weak, time::Duration};
+ 
+ use crate::{
+     shell::{
++        CosmicSurface, SeatExt,
+         element::{CosmicMapped, CosmicStack, CosmicWindow},
+         layout::tiling::ResizeForkTarget,
+         zoom::ZoomFocusTarget,
+-        CosmicSurface, SeatExt,
+     },
+     utils::prelude::*,
+     wayland::handlers::{screencopy::SessionHolder, xdg_shell::popup::get_popup_toplevel},
+@@ -13,8 +13,9 @@ use crate::{
+ use id_tree::NodeId;
+ use smithay::{
+     backend::input::KeyState,
+-    desktop::{space::SpaceElement, LayerSurface, PopupKind, WindowSurface, WindowSurfaceType},
++    desktop::{LayerSurface, PopupKind, WindowSurface, WindowSurfaceType, space::SpaceElement},
+     input::{
++        Seat,
+         keyboard::{KeyboardTarget, KeysymHandle, ModifiersState},
+         pointer::{
+             AxisFrame, ButtonEvent, GestureHoldBeginEvent, GestureHoldEndEvent,
+@@ -26,14 +27,13 @@ use smithay::{
+             DownEvent, MotionEvent as TouchMotionEvent, OrientationEvent, ShapeEvent, TouchTarget,
+             UpEvent,
+         },
+-        Seat,
+     },
+     reexports::wayland_server::{
+-        backend::ObjectId, protocol::wl_surface::WlSurface, Client, Resource,
++        Client, Resource, backend::ObjectId, protocol::wl_surface::WlSurface,
+     },
+     utils::{IsAlive, Logical, Point, Serial, Transform},
+     wayland::{seat::WaylandFocus, session_lock::LockSurface},
+-    xwayland::{xwm::XwmId, X11Surface},
++    xwayland::{X11Surface, xwm::XwmId},
+ };
+ 
+ #[derive(Debug, Clone, PartialEq)]
+diff --git a/src/shell/grabs/menu/default.rs b/src/shell/grabs/menu/default.rs
+index b2d9a12f2..da33f7bbc 100644
+--- a/src/shell/grabs/menu/default.rs
++++ b/src/shell/grabs/menu/default.rs
+@@ -8,9 +8,9 @@ use crate::{
+     config::Config,
+     fl,
+     shell::{
++        CosmicSurface, PointGlobalExt, Shell,
+         element::{CosmicMapped, CosmicWindow},
+         grabs::ReleaseMode,
+-        CosmicSurface, PointGlobalExt, Shell,
+     },
+     state::State,
+     utils::{prelude::SeatExt, screenshot::screenshot_window},
+diff --git a/src/shell/grabs/menu/item.rs b/src/shell/grabs/menu/item.rs
+index d693814f0..be0b2c82b 100644
+--- a/src/shell/grabs/menu/item.rs
++++ b/src/shell/grabs/menu/item.rs
+@@ -1,11 +1,10 @@
+ use cosmic::{
+     iced::Element,
+     iced_core::{
+-        event, layout, mouse, overlay,
+-        renderer::{Quad, Style},
+-        widget::{tree, Id, Tree, Widget},
+         Background, Border, Clipboard, Color, Event, Layout, Length, Rectangle,
+-        Renderer as IcedRenderer, Shell, Size,
++        Renderer as IcedRenderer, Shell, Size, event, layout, mouse, overlay,
++        renderer::{Quad, Style},
++        widget::{Id, Tree, Widget, tree},
+     },
+     widget::button::Catalog,
+ };
+diff --git a/src/shell/grabs/menu/mod.rs b/src/shell/grabs/menu/mod.rs
+index 344bbb976..53325f81a 100644
+--- a/src/shell/grabs/menu/mod.rs
++++ b/src/shell/grabs/menu/mod.rs
+@@ -1,30 +1,31 @@
+ use std::{
+     fmt,
+     sync::{
+-        atomic::{AtomicBool, Ordering},
+         Arc, Mutex,
++        atomic::{AtomicBool, Ordering},
+     },
+ };
+ 
+ use calloop::LoopHandle;
+ use cosmic::{
++    Apply as _, Task,
+     iced::{Alignment, Background},
+-    iced_core::{alignment::Horizontal, Border, Length, Rectangle as IcedRectangle},
+-    iced_widget::{self, text::Style as TextStyle, Column, Row},
++    iced_core::{Border, Length, Rectangle as IcedRectangle, alignment::Horizontal},
++    iced_widget::{self, Column, Row, text::Style as TextStyle},
+     theme,
+     widget::{button, divider, horizontal_space, icon::from_name, text},
+-    Apply as _, Task,
+ };
+ use smithay::{
+     backend::{
+         input::{ButtonState, TouchSlot},
+         renderer::{
+-            element::{memory::MemoryRenderBufferRenderElement, AsRenderElements},
+             ImportMem, Renderer,
++            element::{AsRenderElements, memory::MemoryRenderBufferRenderElement},
+         },
+     },
+     desktop::space::SpaceElement,
+     input::{
++        Seat,
+         pointer::{
+             AxisFrame, ButtonEvent, GestureHoldBeginEvent, GestureHoldEndEvent,
+             GesturePinchBeginEvent, GesturePinchEndEvent, GesturePinchUpdateEvent,
+@@ -36,14 +37,13 @@ use smithay::{
+             DownEvent, GrabStartData as TouchGrabStartData, MotionEvent as TouchMotionEvent,
+             TouchGrab, TouchInnerHandle, TouchTarget, UpEvent,
+         },
+-        Seat,
+     },
+     output::Output,
+     utils::{Logical, Point, Rectangle, Serial, Size},
+ };
+ 
+ use crate::{
+-    shell::{focus::target::PointerFocusTarget, SeatExt},
++    shell::{SeatExt, focus::target::PointerFocusTarget},
+     state::State,
+     utils::{
+         iced::{IcedElement, Program},
+diff --git a/src/shell/grabs/moving.rs b/src/shell/grabs/moving.rs
+index 77e0fd670..28939ffd6 100644
+--- a/src/shell/grabs/moving.rs
++++ b/src/shell/grabs/moving.rs
+@@ -2,16 +2,16 @@
+ 
+ use crate::{
+     backend::render::{
+-        cursor::CursorState, element::AsGlowRenderer, BackdropShader, IndicatorShader, Key, Usage,
++        BackdropShader, IndicatorShader, Key, Usage, cursor::CursorState, element::AsGlowRenderer,
+     },
+     shell::{
++        CosmicMapped, CosmicSurface, Direction, ManagedLayer,
+         element::{
+-            stack_hover::{stack_hover, StackHover},
+             CosmicMappedRenderElement,
++            stack_hover::{StackHover, stack_hover},
+         },
+         focus::target::{KeyboardFocusTarget, PointerFocusTarget},
+         layout::floating::TiledCorners,
+-        CosmicMapped, CosmicSurface, Direction, ManagedLayer,
+     },
+     utils::prelude::*,
+     wayland::protocols::toplevel_info::{toplevel_enter_output, toplevel_enter_workspace},
+@@ -23,12 +23,13 @@ use smithay::{
+     backend::{
+         input::ButtonState,
+         renderer::{
+-            element::{utils::RescaleRenderElement, AsRenderElements, RenderElement},
+             ImportAll, ImportMem, Renderer,
++            element::{AsRenderElements, RenderElement, utils::RescaleRenderElement},
+         },
+     },
+-    desktop::{layer_map_for_output, space::SpaceElement, WindowSurfaceType},
++    desktop::{WindowSurfaceType, layer_map_for_output, space::SpaceElement},
+     input::{
++        Seat,
+         pointer::{
+             AxisFrame, ButtonEvent, CursorIcon, GestureHoldBeginEvent, GestureHoldEndEvent,
+             GesturePinchBeginEvent, GesturePinchEndEvent, GesturePinchUpdateEvent,
+@@ -37,14 +38,13 @@ use smithay::{
+             RelativeMotionEvent,
+         },
+         touch::{self, GrabStartData as TouchGrabStartData, TouchGrab, TouchInnerHandle},
+-        Seat,
+     },
+     output::Output,
+-    utils::{IsAlive, Logical, Point, Rectangle, Scale, Serial, SERIAL_COUNTER},
++    utils::{IsAlive, Logical, Point, Rectangle, SERIAL_COUNTER, Scale, Serial},
+ };
+ use std::{
+     collections::HashSet,
+-    sync::{atomic::Ordering, Mutex},
++    sync::{Mutex, atomic::Ordering},
+     time::Instant,
+ };
+ 
+diff --git a/src/shell/layout/floating/grabs/resize.rs b/src/shell/layout/floating/grabs/resize.rs
+index ee5a67c8d..cf27545be 100644
+--- a/src/shell/layout/floating/grabs/resize.rs
++++ b/src/shell/layout/floating/grabs/resize.rs
+@@ -13,8 +13,9 @@ use crate::{
+ };
+ use smithay::{
+     backend::input::ButtonState,
+-    desktop::{space::SpaceElement, WindowSurface},
++    desktop::{WindowSurface, space::SpaceElement},
+     input::{
++        Seat,
+         pointer::{
+             AxisFrame, ButtonEvent, CursorIcon, GestureHoldBeginEvent, GestureHoldEndEvent,
+             GesturePinchBeginEvent, GesturePinchEndEvent, GesturePinchUpdateEvent,
+@@ -26,7 +27,6 @@ use smithay::{
+             DownEvent, GrabStartData as TouchGrabStartData, MotionEvent as TouchMotionEvent,
+             OrientationEvent, ShapeEvent, TouchGrab, TouchInnerHandle, UpEvent,
+         },
+-        Seat,
+     },
+     output::Output,
+     utils::{IsAlive, Logical, Point, Rectangle, Serial, Size},
+diff --git a/src/shell/layout/floating/mod.rs b/src/shell/layout/floating/mod.rs
+index 126108403..ae29e604d 100644
+--- a/src/shell/layout/floating/mod.rs
++++ b/src/shell/layout/floating/mod.rs
+@@ -10,13 +10,13 @@ use cosmic_settings_config::shortcuts::action::ResizeDirection;
+ use keyframe::{ease, functions::EaseInOutCubic};
+ use smithay::{
+     backend::renderer::{
++        ImportAll, ImportMem, Renderer,
+         element::{
+-            utils::{Relocate, RelocateRenderElement, RescaleRenderElement},
+             AsRenderElements, RenderElement,
++            utils::{Relocate, RelocateRenderElement, RescaleRenderElement},
+         },
+-        ImportAll, ImportMem, Renderer,
+     },
+-    desktop::{layer_map_for_output, space::SpaceElement, PopupKind, Space, WindowSurfaceType},
++    desktop::{PopupKind, Space, WindowSurfaceType, layer_map_for_output, space::SpaceElement},
+     input::Seat,
+     output::Output,
+     utils::{IsAlive, Logical, Point, Rectangle, Scale, Size},
+@@ -24,20 +24,20 @@ use smithay::{
+ };
+ 
+ use crate::{
+-    backend::render::{element::AsGlowRenderer, IndicatorShader, Key, Usage},
++    backend::render::{IndicatorShader, Key, Usage, element::AsGlowRenderer},
+     shell::{
++        CosmicSurface, Direction, ManagedLayer, MoveResult, ResizeMode,
+         element::{
++            CosmicMapped, CosmicMappedRenderElement, CosmicWindow, MaximizedState,
+             resize_indicator::ResizeIndicator,
+             stack::{CosmicStackRenderElement, MoveResult as StackMoveResult, TAB_HEIGHT},
+             window::CosmicWindowRenderElement,
+-            CosmicMapped, CosmicMappedRenderElement, CosmicWindow, MaximizedState,
+         },
+         focus::{
+-            target::{KeyboardFocusTarget, PointerFocusTarget},
+             FocusStackMut,
++            target::{KeyboardFocusTarget, PointerFocusTarget},
+         },
+         grabs::{GrabStartData, ReleaseMode, ResizeEdge},
+-        CosmicSurface, Direction, ManagedLayer, MoveResult, ResizeMode,
+     },
+     state::State,
+     utils::{prelude::*, tween::EaseRectangle},
+diff --git a/src/shell/layout/tiling/blocker.rs b/src/shell/layout/tiling/blocker.rs
+index decb933fd..ccf947381 100644
+--- a/src/shell/layout/tiling/blocker.rs
++++ b/src/shell/layout/tiling/blocker.rs
+@@ -1,6 +1,6 @@
+ use crate::shell::element::CosmicSurface;
+ use smithay::{
+-    reexports::wayland_server::{backend::ClientId, Client, Resource},
++    reexports::wayland_server::{Client, Resource, backend::ClientId},
+     utils::{IsAlive, Serial},
+     wayland::{
+         compositor::{Blocker, BlockerState},
+diff --git a/src/shell/layout/tiling/grabs/resize.rs b/src/shell/layout/tiling/grabs/resize.rs
+index 17ec3b77a..51d5c9a2f 100644
+--- a/src/shell/layout/tiling/grabs/resize.rs
++++ b/src/shell/layout/tiling/grabs/resize.rs
+@@ -13,6 +13,7 @@ use id_tree::{NodeId, Tree};
+ use smithay::{
+     backend::input::ButtonState,
+     input::{
++        Seat,
+         pointer::{
+             AxisFrame, ButtonEvent, CursorIcon, Focus, GestureHoldBeginEvent, GestureHoldEndEvent,
+             GesturePinchBeginEvent, GesturePinchEndEvent, GesturePinchUpdateEvent,
+@@ -24,7 +25,6 @@ use smithay::{
+             DownEvent, GrabStartData as TouchGrabStartData, MotionEvent as TouchMotionEvent,
+             OrientationEvent, ShapeEvent, TouchGrab, TouchInnerHandle, TouchTarget, UpEvent,
+         },
+-        Seat,
+     },
+     output::WeakOutput,
+     utils::{IsAlive, Logical, Point, Serial},
+diff --git a/src/shell/layout/tiling/grabs/swap.rs b/src/shell/layout/tiling/grabs/swap.rs
+index f603f9d20..4c22209f7 100644
+--- a/src/shell/layout/tiling/grabs/swap.rs
++++ b/src/shell/layout/tiling/grabs/swap.rs
+@@ -2,18 +2,18 @@ use cosmic_settings_config::shortcuts;
+ use smithay::{
+     backend::input::{KeyState, Keycode},
+     input::{
++        Seat, SeatHandler,
+         keyboard::{
+             GrabStartData as KeyboardGrabStartData, KeyboardGrab, KeyboardInnerHandle,
+             ModifiersState,
+         },
+-        Seat, SeatHandler,
+     },
+     utils::Serial,
+ };
+ 
+ use crate::{
+     config::key_bindings::cosmic_modifiers_from_smithay,
+-    shell::{layout::tiling::NodeDesc, Trigger},
++    shell::{Trigger, layout::tiling::NodeDesc},
+     state::State,
+ };
+ 
+diff --git a/src/shell/layout/tiling/mod.rs b/src/shell/layout/tiling/mod.rs
+index 08aa8dffd..271a1d7fd 100644
+--- a/src/shell/layout/tiling/mod.rs
++++ b/src/shell/layout/tiling/mod.rs
+@@ -2,11 +2,14 @@
+ 
+ use crate::{
+     backend::render::{
+-        element::AsGlowRenderer, BackdropShader, IndicatorShader, Key, Usage, ACTIVE_GROUP_COLOR,
+-        GROUP_COLOR,
++        ACTIVE_GROUP_COLOR, BackdropShader, GROUP_COLOR, IndicatorShader, Key, Usage,
++        element::AsGlowRenderer,
+     },
+     shell::{
++        CosmicSurface, Direction, FocusResult, MoveResult, OutputNotMapped, OverviewMode,
++        ResizeMode, Trigger,
+         element::{
++            CosmicMapped, CosmicMappedRenderElement, CosmicStack, CosmicWindow,
+             resize_indicator::ResizeIndicator,
+             stack::{
+                 CosmicStackRenderElement, MoveResult as StackMoveResult,
+@@ -14,16 +17,13 @@ use crate::{
+             },
+             swap_indicator::SwapIndicator,
+             window::CosmicWindowRenderElement,
+-            CosmicMapped, CosmicMappedRenderElement, CosmicStack, CosmicWindow,
+         },
+         focus::{
+-            target::{KeyboardFocusTarget, PointerFocusTarget, WindowGroup},
+             FocusStackMut, FocusTarget,
++            target::{KeyboardFocusTarget, PointerFocusTarget, WindowGroup},
+         },
+         grabs::ResizeEdge,
+         layout::Orientation,
+-        CosmicSurface, Direction, FocusResult, MoveResult, OutputNotMapped, OverviewMode,
+-        ResizeMode, Trigger,
+     },
+     utils::{prelude::*, tween::EaseRectangle},
+     wayland::{
+@@ -46,17 +46,17 @@ use keyframe::{
+ };
+ use smithay::{
+     backend::renderer::{
++        ImportAll, ImportMem, Renderer,
+         element::{
++            AsRenderElements, Id, RenderElement,
+             utils::{
+-                constrain_render_elements, ConstrainAlign, ConstrainScaleBehavior,
+-                RescaleRenderElement,
++                ConstrainAlign, ConstrainScaleBehavior, RescaleRenderElement,
++                constrain_render_elements,
+             },
+-            AsRenderElements, Id, RenderElement,
+         },
+         glow::GlowRenderer,
+-        ImportAll, ImportMem, Renderer,
+     },
+-    desktop::{layer_map_for_output, space::SpaceElement, PopupKind, WindowSurfaceType},
++    desktop::{PopupKind, WindowSurfaceType, layer_map_for_output, space::SpaceElement},
+     input::Seat,
+     output::Output,
+     reexports::wayland_server::Client,
+@@ -2209,12 +2209,14 @@ impl TilingLayout {
+                 Data::Group { alive, .. } => KeyboardFocusTarget::Group(WindowGroup {
+                     node: node_id.clone(),
+                     alive: Arc::downgrade(alive),
+-                    focus_stack: vec![new_elements[0]
+-                        .tiling_node_id
+-                        .lock()
+-                        .unwrap()
+-                        .clone()
+-                        .unwrap()],
++                    focus_stack: vec![
++                        new_elements[0]
++                            .tiling_node_id
++                            .lock()
++                            .unwrap()
++                            .clone()
++                            .unwrap(),
++                    ],
+                 }),
+                 Data::Mapped { mapped, .. } => KeyboardFocusTarget::Element(mapped.clone()),
+                 _ => unreachable!(),
+diff --git a/src/shell/mod.rs b/src/shell/mod.rs
+index 97768f45d..b6e73de68 100644
+--- a/src/shell/mod.rs
++++ b/src/shell/mod.rs
+@@ -5,7 +5,7 @@ use indexmap::IndexMap;
+ use layout::TilingExceptions;
+ use std::{
+     collections::HashMap,
+-    sync::{atomic::Ordering, Mutex},
++    sync::{Mutex, atomic::Ordering},
+     thread,
+     time::{Duration, Instant},
+ };
+@@ -19,8 +19,8 @@ use crate::{
+     },
+ };
+ use cosmic_comp_config::{
+-    workspace::{PinnedWorkspace, WorkspaceLayout, WorkspaceMode},
+     TileBehavior, ZoomConfig, ZoomMovement,
++    workspace::{PinnedWorkspace, WorkspaceLayout, WorkspaceMode},
+ };
+ use cosmic_config::ConfigSet;
+ use cosmic_protocols::workspace::v2::server::zcosmic_workspace_handle_v2::TilingState;
+@@ -30,28 +30,27 @@ use keyframe::{ease, functions::EaseInOutCubic};
+ use smithay::{
+     backend::{input::TouchSlot, renderer::element::RenderElementStates},
+     desktop::{
+-        layer_map_for_output,
++        LayerSurface, PopupKind, WindowSurface, WindowSurfaceType, layer_map_for_output,
+         space::SpaceElement,
+         utils::{
+-            surface_presentation_feedback_flags_from_states, surface_primary_scanout_output,
+-            take_presentation_feedback_surface_tree, OutputPresentationFeedback,
++            OutputPresentationFeedback, surface_presentation_feedback_flags_from_states,
++            surface_primary_scanout_output, take_presentation_feedback_surface_tree,
+         },
+-        LayerSurface, PopupKind, WindowSurface, WindowSurfaceType,
+     },
+     input::{
++        Seat,
+         pointer::{
+             CursorImageStatus, CursorImageSurfaceData, Focus, GrabStartData as PointerGrabStartData,
+         },
+-        Seat,
+     },
+     output::{Output, WeakOutput},
+     reexports::{
+         wayland_protocols::ext::session_lock::v1::server::ext_session_lock_v1::ExtSessionLockV1,
+-        wayland_server::{protocol::wl_surface::WlSurface, Client},
++        wayland_server::{Client, protocol::wl_surface::WlSurface},
+     },
+     utils::{IsAlive, Logical, Point, Rectangle, Serial, Size},
+     wayland::{
+-        compositor::{with_states, SurfaceAttributes},
++        compositor::{SurfaceAttributes, with_states},
+         seat::WaylandFocus,
+         session_lock::LockSurface,
+         shell::wlr_layer::{KeyboardInteractivity, Layer, LayerSurfaceCachedState},
+@@ -73,8 +72,8 @@ use crate::{
+         },
+         protocols::{
+             toplevel_info::{
+-                toplevel_enter_output, toplevel_enter_workspace, toplevel_leave_output,
+-                toplevel_leave_workspace, ToplevelInfoState,
++                ToplevelInfoState, toplevel_enter_output, toplevel_enter_workspace,
++                toplevel_leave_output, toplevel_leave_workspace,
+             },
+             workspace::{
+                 WorkspaceGroupHandle, WorkspaceHandle, WorkspaceState, WorkspaceUpdateGuard,
+@@ -97,14 +96,14 @@ use self::zoom::{OutputZoomState, ZoomState};
+ 
+ use self::{
+     element::{
+-        resize_indicator::{resize_indicator, ResizeIndicator},
+-        swap_indicator::{swap_indicator, SwapIndicator},
+         CosmicWindow, MaximizedState,
++        resize_indicator::{ResizeIndicator, resize_indicator},
++        swap_indicator::{SwapIndicator, swap_indicator},
+     },
+     focus::target::{KeyboardFocusTarget, PointerFocusTarget},
+     grabs::{
+-        tab_items, window_items, GrabStartData, Item, MenuGrab, MoveGrab, ReleaseMode, ResizeEdge,
+-        ResizeGrab,
++        GrabStartData, Item, MenuGrab, MoveGrab, ReleaseMode, ResizeEdge, ResizeGrab, tab_items,
++        window_items,
+     },
+     layout::{
+         floating::{FloatingLayout, ResizeState},
+@@ -2030,11 +2029,7 @@ impl Shell {
+                     Direction::Left => current_output_geo.loc.x - origin.x,
+                     Direction::Right => origin.x - current_output_geo.loc.x,
+                 };
+-                if res > 0 {
+-                    Some((o, res))
+-                } else {
+-                    None
+-                }
++                if res > 0 { Some((o, res)) } else { None }
+             })
+             .min_by_key(|(_, res)| *res)
+             .map(|(o, _)| o)
+@@ -3766,41 +3761,25 @@ impl Shell {
+                     .filter(|(_, other_geo)| other_geo.loc.y <= geometry.loc.y)
+                     .min_by_key(|(_, other_geo)| {
+                         let res = geometry.loc.y - other_geo.loc.y;
+-                        if res.is_positive() {
+-                            res
+-                        } else {
+-                            i32::MAX
+-                        }
++                        if res.is_positive() { res } else { i32::MAX }
+                     }),
+                 FocusDirection::Down => elements
+                     .filter(|(_, other_geo)| other_geo.loc.y > geometry.loc.y)
+                     .max_by_key(|(_, other_geo)| {
+                         let res = geometry.loc.y - other_geo.loc.y;
+-                        if res.is_negative() {
+-                            res
+-                        } else {
+-                            i32::MIN
+-                        }
++                        if res.is_negative() { res } else { i32::MIN }
+                     }),
+                 FocusDirection::Left => elements
+                     .filter(|(_, other_geo)| other_geo.loc.x <= geometry.loc.x)
+                     .min_by_key(|(_, other_geo)| {
+                         let res = geometry.loc.x - other_geo.loc.x;
+-                        if res.is_positive() {
+-                            res
+-                        } else {
+-                            i32::MAX
+-                        }
++                        if res.is_positive() { res } else { i32::MAX }
+                     }),
+                 FocusDirection::Right => elements
+                     .filter(|(_, other_geo)| other_geo.loc.x > geometry.loc.x)
+                     .max_by_key(|(_, other_geo)| {
+                         let res = geometry.loc.x - other_geo.loc.x;
+-                        if res.is_negative() {
+-                            res
+-                        } else {
+-                            i32::MIN
+-                        }
++                        if res.is_negative() { res } else { i32::MIN }
+                     }),
+                 _ => return FocusResult::None,
+             }
+diff --git a/src/shell/seats.rs b/src/shell/seats.rs
+index b1a5a28f4..4a40f9afe 100644
+--- a/src/shell/seats.rs
++++ b/src/shell/seats.rs
+@@ -4,7 +4,7 @@ use std::{any::Any, cell::RefCell, collections::HashMap, sync::Mutex};
+ 
+ use crate::{
+     backend::render::cursor::CursorState,
+-    config::{xkb_config_to_wl, Config},
++    config::{Config, xkb_config_to_wl},
+     input::{ModifiersShortcutQueue, SupressedButtons, SupressedKeys},
+     state::State,
+ };
+@@ -12,9 +12,9 @@ use smithay::{
+     backend::input::{Device, DeviceCapability},
+     desktop::utils::bbox_from_surface_tree,
+     input::{
++        Seat, SeatState,
+         keyboard::{LedState, XkbConfig},
+         pointer::{CursorImageAttributes, CursorImageStatus},
+-        Seat, SeatState,
+     },
+     output::Output,
+     reexports::{input::Device as InputDevice, wayland_server::DisplayHandle},
+diff --git a/src/shell/workspace.rs b/src/shell/workspace.rs
+index 87908e078..26229335c 100644
+--- a/src/shell/workspace.rs
++++ b/src/shell/workspace.rs
+@@ -3,12 +3,12 @@ use crate::shell::layout::tiling::RestoreTilingState;
+ use crate::wayland::handlers::xdg_activation::ActivationContext;
+ use crate::{
+     backend::render::{
+-        element::{AsGlowRenderer, FromGlesError},
+         BackdropShader,
++        element::{AsGlowRenderer, FromGlesError},
+     },
+     shell::{
++        ANIMATION_DURATION, OverviewMode,
+         layout::{floating::FloatingLayout, tiling::TilingLayout},
+-        OverviewMode, ANIMATION_DURATION,
+     },
+     state::State,
+     utils::{prelude::*, tween::EaseRectangle},
+@@ -30,16 +30,16 @@ use keyframe::{ease, functions::EaseInOutCubic};
+ use smithay::output::WeakOutput;
+ use smithay::{
+     backend::renderer::{
++        ImportAll, ImportMem, Renderer,
+         element::{
+-            surface::WaylandSurfaceRenderElement, texture::TextureRenderElement,
+-            utils::RescaleRenderElement, Element, Id, RenderElement,
++            Element, Id, RenderElement, surface::WaylandSurfaceRenderElement,
++            texture::TextureRenderElement, utils::RescaleRenderElement,
+         },
+         gles::GlesTexture,
+         glow::GlowRenderer,
+         utils::{DamageSet, OpaqueRegions},
+-        ImportAll, ImportMem, Renderer,
+     },
+-    desktop::{layer_map_for_output, space::SpaceElement, WindowSurfaceType},
++    desktop::{WindowSurfaceType, layer_map_for_output, space::SpaceElement},
+     input::Seat,
+     output::Output,
+     reexports::wayland_server::Client,
+@@ -54,18 +54,18 @@ use std::{
+ use wayland_backend::server::ClientId;
+ 
+ use super::{
++    CosmicMappedRenderElement, CosmicSurface, ResizeDirection, ResizeMode,
+     element::{
+-        resize_indicator::ResizeIndicator, stack::CosmicStackRenderElement,
+-        swap_indicator::SwapIndicator, window::CosmicWindowRenderElement, CosmicMapped,
+-        MaximizedState,
++        CosmicMapped, MaximizedState, resize_indicator::ResizeIndicator,
++        stack::CosmicStackRenderElement, swap_indicator::SwapIndicator,
++        window::CosmicWindowRenderElement,
+     },
+     focus::{
+-        target::{KeyboardFocusTarget, PointerFocusTarget, WindowGroup},
+         FocusStack, FocusStackMut,
++        target::{KeyboardFocusTarget, PointerFocusTarget, WindowGroup},
+     },
+     grabs::ResizeEdge,
+     layout::tiling::{Data, NodeDesc},
+-    CosmicMappedRenderElement, CosmicSurface, ResizeDirection, ResizeMode,
+ };
+ 
+ const FULLSCREEN_ANIMATION_DURATION: Duration = Duration::from_millis(200);
+diff --git a/src/shell/zoom.rs b/src/shell/zoom.rs
+index 62dc3fabd..a3455e15b 100644
+--- a/src/shell/zoom.rs
++++ b/src/shell/zoom.rs
+@@ -2,18 +2,19 @@ use std::{sync::Mutex, time::Instant};
+ 
+ use calloop::LoopHandle;
+ use cosmic::{
+-    iced::{alignment::Vertical, Alignment, Background, Border, Length},
++    Apply,
++    iced::{Alignment, Background, Border, Length, alignment::Vertical},
+     iced_widget, theme,
+     widget::{self, icon::Named},
+-    Apply,
+ };
+ use cosmic_comp_config::ZoomMovement;
+ use cosmic_config::ConfigSet;
+ use keyframe::{ease, functions::EaseInOutCubic};
+ use smithay::{
+-    backend::renderer::{element::AsRenderElements, ImportMem, Renderer},
++    backend::renderer::{ImportMem, Renderer, element::AsRenderElements},
+     desktop::space::SpaceElement,
+     input::{
++        Seat,
+         pointer::{
+             AxisFrame, ButtonEvent, Focus, GestureHoldBeginEvent, GestureHoldEndEvent,
+             GesturePinchBeginEvent, GesturePinchEndEvent, GesturePinchUpdateEvent,
+@@ -24,7 +25,6 @@ use smithay::{
+             DownEvent, MotionEvent as TouchMotionEvent, OrientationEvent, ShapeEvent, TouchTarget,
+             UpEvent,
+         },
+-        Seat,
+     },
+     output::Output,
+     utils::{IsAlive, Point, Rectangle, Serial, Size},
+@@ -42,10 +42,9 @@ use crate::{
+ };
+ 
+ use super::{
+-    check_grab_preconditions,
++    ANIMATION_DURATION, check_grab_preconditions,
+     focus::target::PointerFocusTarget,
+     grabs::{ContextMenu, Item, MenuAlignment, MenuGrab},
+-    ANIMATION_DURATION,
+ };
+ 
+ #[derive(Debug, Clone)]
+diff --git a/src/state.rs b/src/state.rs
+index 30e031f1d..a30b373ad 100644
+--- a/src/state.rs
++++ b/src/state.rs
+@@ -8,8 +8,8 @@ use crate::{
+         x11::X11State,
+     },
+     config::{CompOutputConfig, Config, ScreenFilter},
+-    input::{gestures::GestureState, PointerFocusState},
+-    shell::{grabs::SeatMoveGrabState, CosmicSurface, SeatExt, Shell},
++    input::{PointerFocusState, gestures::GestureState},
++    shell::{CosmicSurface, SeatExt, Shell, grabs::SeatMoveGrabState},
+     utils::prelude::OutputExt,
+     wayland::{
+         handlers::{data_device::get_dnd_icon, screencopy::SessionHolder},
+@@ -34,41 +34,40 @@ use anyhow::Context;
+ use calloop::RegistrationToken;
+ use cosmic_comp_config::output::comp::{OutputConfig, OutputState};
+ use i18n_embed::{
+-    fluent::{fluent_language_loader, FluentLanguageLoader},
+     DesktopLanguageRequester,
++    fluent::{FluentLanguageLoader, fluent_language_loader},
+ };
+ use rust_embed::RustEmbed;
+ use smithay::{
+     backend::{
+-        allocator::{dmabuf::Dmabuf, Fourcc},
++        allocator::{Fourcc, dmabuf::Dmabuf},
+         drm::DrmNode,
+         renderer::{
++            ImportDma,
+             element::{
+-                default_primary_scanout_output_compare, utils::select_dmabuf_feedback,
+-                RenderElementState, RenderElementStates,
++                RenderElementState, RenderElementStates, default_primary_scanout_output_compare,
++                utils::select_dmabuf_feedback,
+             },
+-            ImportDma,
+         },
+     },
+     desktop::{
+-        layer_map_for_output,
++        PopupManager, layer_map_for_output,
+         utils::{
+             send_dmabuf_feedback_surface_tree, send_frames_surface_tree,
+             surface_primary_scanout_output, update_surface_primary_scanout_output,
+             with_surfaces_surface_tree,
+         },
+-        PopupManager,
+     },
+-    input::{pointer::CursorImageStatus, SeatState},
++    input::{SeatState, pointer::CursorImageStatus},
+     output::{Output, Scale, WeakOutput},
+     reexports::{
+         calloop::{LoopHandle, LoopSignal},
+         wayland_protocols::xdg::shell::server::xdg_toplevel::WmCapabilities,
+         wayland_protocols_misc::server_decoration::server::org_kde_kwin_server_decoration_manager::Mode,
+         wayland_server::{
++            Client, DisplayHandle, Resource,
+             backend::{ClientData, ClientId, DisconnectReason},
+             protocol::{wl_shm, wl_surface::WlSurface},
+-            Client, DisplayHandle, Resource,
+         },
+     },
+     utils::{Clock, Monotonic, Point},
+@@ -77,7 +76,7 @@ use smithay::{
+         compositor::{CompositorClientState, CompositorState, SurfaceData},
+         cursor_shape::CursorShapeManagerState,
+         dmabuf::{DmabufFeedback, DmabufGlobal, DmabufState},
+-        fractional_scale::{with_fractional_scale, FractionalScaleManagerState},
++        fractional_scale::{FractionalScaleManagerState, with_fractional_scale},
+         idle_inhibit::IdleInhibitManagerState,
+         idle_notify::IdleNotifierState,
+         input_method::InputMethodManagerState,
+@@ -96,7 +95,7 @@ use smithay::{
+         shell::{
+             kde::decoration::KdeDecorationState,
+             wlr_layer::WlrLayerShellState,
+-            xdg::{decoration::XdgDecorationState, XdgShellState},
++            xdg::{XdgShellState, decoration::XdgDecorationState},
+         },
+         shm::ShmState,
+         single_pixel_buffer::SinglePixelBufferState,
+@@ -122,7 +121,7 @@ use std::{
+     collections::HashSet,
+     ffi::OsString,
+     process::Child,
+-    sync::{atomic::AtomicBool, Arc, LazyLock, Once},
++    sync::{Arc, LazyLock, Once, atomic::AtomicBool},
+     time::{Duration, Instant},
+ };
+ 
+diff --git a/src/systemd.rs b/src/systemd.rs
+index 100a5467a..422d91c95 100644
+--- a/src/systemd.rs
++++ b/src/systemd.rs
+@@ -1,7 +1,7 @@
+ // SPDX-License-Identifier: GPL-3.0-only
+ 
+ use crate::state::Common;
+-use libsystemd::daemon::{booted, notify, NotifyState};
++use libsystemd::daemon::{NotifyState, booted, notify};
+ use std::process::Command;
+ use tracing::{error, warn};
+ 
+diff --git a/src/theme.rs b/src/theme.rs
+index 26fefdf13..d89d89f56 100644
+--- a/src/theme.rs
++++ b/src/theme.rs
+@@ -3,7 +3,7 @@
+ // update a Arc<Mutex<Theme>> in the state on change of the theme and mark all interfaces for a redraw.
+ 
+ use calloop::LoopHandle;
+-use cosmic::cosmic_theme::{palette, Theme, ThemeMode};
++use cosmic::cosmic_theme::{Theme, ThemeMode, palette};
+ 
+ use crate::state::State;
+ 
+diff --git a/src/utils/iced.rs b/src/utils/iced.rs
+index e66591ff4..43fa005f7 100644
+--- a/src/utils/iced.rs
++++ b/src/utils/iced.rs
+@@ -2,11 +2,13 @@ use std::{
+     collections::{HashMap, HashSet},
+     fmt,
+     hash::{Hash, Hasher},
+-    sync::{mpsc::Receiver, Arc, LazyLock, Mutex},
++    sync::{Arc, LazyLock, Mutex, mpsc::Receiver},
+ };
+ 
+ use cosmic::{
++    Theme,
+     iced::{
++        Limits, Point as IcedPoint, Size as IcedSize, Task,
+         advanced::{graphics::text::font_system, widget::Tree},
+         event::Event,
+         futures::{FutureExt, StreamExt},
+@@ -14,19 +16,17 @@ use cosmic::{
+         mouse::{Button as MouseButton, Cursor, Event as MouseEvent, ScrollDelta},
+         touch::{Event as TouchEvent, Finger},
+         window::Event as WindowEvent,
+-        Limits, Point as IcedPoint, Size as IcedSize, Task,
+     },
+-    iced_core::{clipboard::Null as NullClipboard, id::Id, renderer::Style, Color, Length, Pixels},
++    iced_core::{Color, Length, Pixels, clipboard::Null as NullClipboard, id::Id, renderer::Style},
+     iced_runtime::{
++        Action, Debug,
+         program::{Program as IcedProgram, State},
+         task::into_stream,
+-        Action, Debug,
+     },
+-    Theme,
+ };
+ use iced_tiny_skia::{
+-    graphics::{damage, Viewport},
+     Layer,
++    graphics::{Viewport, damage},
+ };
+ 
+ use ordered_float::OrderedFloat;
+@@ -35,15 +35,16 @@ use smithay::{
+         allocator::Fourcc,
+         input::{ButtonState, KeyState},
+         renderer::{
++            ImportMem, Renderer,
+             element::{
+-                memory::{MemoryRenderBuffer, MemoryRenderBufferRenderElement},
+                 AsRenderElements, Kind,
++                memory::{MemoryRenderBuffer, MemoryRenderBufferRenderElement},
+             },
+-            ImportMem, Renderer,
+         },
+     },
+     desktop::space::{RenderZindex, SpaceElement},
+     input::{
++        Seat,
+         keyboard::{KeyboardTarget, KeysymHandle, ModifiersState},
+         pointer::{
+             AxisFrame, ButtonEvent, GestureHoldBeginEvent, GestureHoldEndEvent,
+@@ -55,11 +56,10 @@ use smithay::{
+             DownEvent, MotionEvent as TouchMotionEvent, OrientationEvent, ShapeEvent, TouchTarget,
+             UpEvent,
+         },
+-        Seat,
+     },
+     output::Output,
+     reexports::calloop::RegistrationToken,
+-    reexports::calloop::{self, futures::Scheduler, LoopHandle},
++    reexports::calloop::{self, LoopHandle, futures::Scheduler},
+     utils::{
+         Buffer as BufferCoords, IsAlive, Logical, Physical, Point, Rectangle, Scale, Serial, Size,
+         Transform,
+diff --git a/src/utils/prelude.rs b/src/utils/prelude.rs
+index 630023036..2baae7724 100644
+--- a/src/utils/prelude.rs
++++ b/src/utils/prelude.rs
+@@ -14,8 +14,8 @@ use crate::{config::EdidProduct, shell::zoom::OutputZoomState};
+ use std::{
+     cell::{Ref, RefCell, RefMut},
+     sync::{
+-        atomic::{AtomicU8, Ordering},
+         Mutex,
++        atomic::{AtomicU8, Ordering},
+     },
+ };
+ 
+diff --git a/src/utils/rlimit.rs b/src/utils/rlimit.rs
+index a5e9066ef..31f75e048 100644
+--- a/src/utils/rlimit.rs
++++ b/src/utils/rlimit.rs
+@@ -1,4 +1,4 @@
+-use rustix::process::{getrlimit, setrlimit, Resource, Rlimit};
++use rustix::process::{Resource, Rlimit, getrlimit, setrlimit};
+ use std::sync::atomic::{AtomicU64, Ordering};
+ 
+ static OLD_LIMIT: AtomicU64 = AtomicU64::new(0);
+diff --git a/src/utils/screenshot.rs b/src/utils/screenshot.rs
+index a9d2a95f2..d983271d9 100644
+--- a/src/utils/screenshot.rs
++++ b/src/utils/screenshot.rs
+@@ -3,10 +3,10 @@ use smithay::{
+     backend::{
+         allocator::Fourcc,
+         renderer::{
++            ExportMem, ImportAll, Offscreen, Renderer,
+             damage::OutputDamageTracker,
+-            element::{surface::WaylandSurfaceRenderElement, AsRenderElements},
++            element::{AsRenderElements, surface::WaylandSurfaceRenderElement},
+             gles::GlesRenderbuffer,
+-            ExportMem, ImportAll, Offscreen, Renderer,
+         },
+     },
+     desktop::utils::bbox_from_surface_tree,
+@@ -18,7 +18,7 @@ use tracing::warn;
+ use crate::{
+     backend::render::RendererRef,
+     shell::element::CosmicSurface,
+-    state::{advertised_node_for_surface, State},
++    state::{State, advertised_node_for_surface},
+ };
+ 
+ pub fn screenshot_window(state: &mut State, surface: &CosmicSurface) {
+diff --git a/src/utils/tween.rs b/src/utils/tween.rs
+index 090518f90..490fa3e8d 100644
+--- a/src/utils/tween.rs
++++ b/src/utils/tween.rs
+@@ -1,4 +1,4 @@
+-use keyframe::{num_traits::Float, CanTween};
++use keyframe::{CanTween, num_traits::Float};
+ use smithay::utils::{Coordinate, Point, Rectangle, Size};
+ 
+ pub struct EasePoint<N: Coordinate, Kind>(pub Point<N, Kind>);
+diff --git a/src/wayland/handlers/a11y.rs b/src/wayland/handlers/a11y.rs
+index bd7d2cca2..4e42643af 100644
+--- a/src/wayland/handlers/a11y.rs
++++ b/src/wayland/handlers/a11y.rs
+@@ -3,7 +3,7 @@ use tracing::warn;
+ use crate::{
+     config::ColorFilter,
+     state::State,
+-    wayland::protocols::a11y::{delegate_a11y, A11yHandler, A11yState},
++    wayland::protocols::a11y::{A11yHandler, A11yState, delegate_a11y},
+ };
+ 
+ impl A11yHandler for State {
+diff --git a/src/wayland/handlers/atspi.rs b/src/wayland/handlers/atspi.rs
+index eb4adc7cf..774055eda 100644
+--- a/src/wayland/handlers/atspi.rs
++++ b/src/wayland/handlers/atspi.rs
+@@ -22,7 +22,7 @@ use xkbcommon::xkb;
+ 
+ use crate::{
+     state::State,
+-    wayland::protocols::atspi::{delegate_atspi, AtspiHandler},
++    wayland::protocols::atspi::{AtspiHandler, delegate_atspi},
+ };
+ 
+ #[derive(PartialEq, Debug)]
+diff --git a/src/wayland/handlers/buffer.rs b/src/wayland/handlers/buffer.rs
+index b998fd876..56e7af46c 100644
+--- a/src/wayland/handlers/buffer.rs
++++ b/src/wayland/handlers/buffer.rs
+@@ -2,7 +2,7 @@
+ 
+ use crate::state::{BackendData, State};
+ use smithay::{
+-    reexports::wayland_server::{protocol::wl_buffer::WlBuffer, Resource},
++    reexports::wayland_server::{Resource, protocol::wl_buffer::WlBuffer},
+     wayland::buffer::BufferHandler,
+ };
+ use tracing::warn;
+diff --git a/src/wayland/handlers/compositor.rs b/src/wayland/handlers/compositor.rs
+index ce0bc557d..519eed956 100644
+--- a/src/wayland/handlers/compositor.rs
++++ b/src/wayland/handlers/compositor.rs
+@@ -4,18 +4,18 @@ use crate::{shell::grabs::SeatMoveGrabState, state::ClientState, utils::prelude:
+ use calloop::Interest;
+ use smithay::{
+     backend::renderer::{
+-        element::{surface::KindEvaluation, Kind},
++        element::{Kind, surface::KindEvaluation},
+         utils::{on_commit_buffer_handler, with_renderer_surface_state},
+     },
+     delegate_compositor,
+-    desktop::{layer_map_for_output, LayerSurface, PopupKind, WindowSurfaceType},
+-    reexports::wayland_server::{protocol::wl_surface::WlSurface, Client, Resource},
+-    utils::{Clock, Logical, Monotonic, Size, Time, SERIAL_COUNTER},
++    desktop::{LayerSurface, PopupKind, WindowSurfaceType, layer_map_for_output},
++    reexports::wayland_server::{Client, Resource, protocol::wl_surface::WlSurface},
++    utils::{Clock, Logical, Monotonic, SERIAL_COUNTER, Size, Time},
+     wayland::{
+         compositor::{
+-            add_blocker, add_post_commit_hook, add_pre_commit_hook, with_states,
+-            with_surface_tree_downward, BufferAssignment, CompositorClientState, CompositorHandler,
+-            CompositorState, SurfaceAttributes, SurfaceData, TraversalAction,
++            BufferAssignment, CompositorClientState, CompositorHandler, CompositorState,
++            SurfaceAttributes, SurfaceData, TraversalAction, add_blocker, add_post_commit_hook,
++            add_pre_commit_hook, with_states, with_surface_tree_downward,
+         },
+         dmabuf::get_dmabuf,
+         drm_syncobj::DrmSyncobjCachedState,
+diff --git a/src/wayland/handlers/corner_radius.rs b/src/wayland/handlers/corner_radius.rs
+index cdcd616a2..dbcae2dce 100644
+--- a/src/wayland/handlers/corner_radius.rs
++++ b/src/wayland/handlers/corner_radius.rs
+@@ -1,7 +1,7 @@
+ use cosmic_protocols::corner_radius::v1::server::cosmic_corner_radius_toplevel_v1;
+ 
+ use crate::wayland::protocols::corner_radius::{
+-    delegate_corner_radius, CornerRadiusData, CornerRadiusHandler, CornerRadiusState,
++    CornerRadiusData, CornerRadiusHandler, CornerRadiusState, delegate_corner_radius,
+ };
+ 
+ use crate::state::State;
+diff --git a/src/wayland/handlers/data_device.rs b/src/wayland/handlers/data_device.rs
+index 11c7cac7e..26aa6cd3e 100644
+--- a/src/wayland/handlers/data_device.rs
++++ b/src/wayland/handlers/data_device.rs
+@@ -4,8 +4,8 @@ use crate::{state::State, utils::prelude::SeatExt};
+ use smithay::{
+     delegate_data_device,
+     input::{
+-        pointer::{CursorImageStatus, CursorImageSurfaceData},
+         Seat,
++        pointer::{CursorImageStatus, CursorImageSurfaceData},
+     },
+     reexports::wayland_server::protocol::{wl_data_source::WlDataSource, wl_surface::WlSurface},
+     utils::{IsAlive, Logical, Point},
+diff --git a/src/wayland/handlers/decoration.rs b/src/wayland/handlers/decoration.rs
+index 5e1d0c5aa..d8df7d28f 100644
+--- a/src/wayland/handlers/decoration.rs
++++ b/src/wayland/handlers/decoration.rs
+@@ -15,7 +15,7 @@ use smithay::{
+         seat::WaylandFocus,
+         shell::{
+             kde::decoration::{KdeDecorationHandler, KdeDecorationState},
+-            xdg::{decoration::XdgDecorationHandler, ToplevelSurface},
++            xdg::{ToplevelSurface, decoration::XdgDecorationHandler},
+         },
+     },
+ };
+diff --git a/src/wayland/handlers/drm.rs b/src/wayland/handlers/drm.rs
+index ffdd75e92..b34190850 100644
+--- a/src/wayland/handlers/drm.rs
++++ b/src/wayland/handlers/drm.rs
+@@ -2,11 +2,11 @@
+ 
+ use crate::{
+     state::{BackendData, State},
+-    wayland::protocols::drm::{delegate_wl_drm, DrmHandler, ImportError},
++    wayland::protocols::drm::{DrmHandler, ImportError, delegate_wl_drm},
+ };
+ use smithay::{
+     backend::{allocator::dmabuf::Dmabuf, drm::DrmNode},
+-    reexports::wayland_server::{protocol::wl_buffer::WlBuffer, Resource},
++    reexports::wayland_server::{Resource, protocol::wl_buffer::WlBuffer},
+     wayland::dmabuf::DmabufGlobal,
+ };
+ use tracing::warn;
+diff --git a/src/wayland/handlers/fractional_scale.rs b/src/wayland/handlers/fractional_scale.rs
+index d57f25760..c68062edb 100644
+--- a/src/wayland/handlers/fractional_scale.rs
++++ b/src/wayland/handlers/fractional_scale.rs
+@@ -5,7 +5,7 @@ use smithay::{
+     reexports::wayland_server::protocol::wl_surface::WlSurface,
+     wayland::{
+         compositor::{get_parent, with_states},
+-        fractional_scale::{with_fractional_scale, FractionalScaleHandler},
++        fractional_scale::{FractionalScaleHandler, with_fractional_scale},
+     },
+ };
+ 
+diff --git a/src/wayland/handlers/input_method.rs b/src/wayland/handlers/input_method.rs
+index d492d8863..5b4aa59a4 100644
+--- a/src/wayland/handlers/input_method.rs
++++ b/src/wayland/handlers/input_method.rs
+@@ -3,7 +3,7 @@
+ use crate::state::State;
+ use smithay::{
+     delegate_input_method_manager,
+-    desktop::{space::SpaceElement, PopupKind, PopupManager},
++    desktop::{PopupKind, PopupManager, space::SpaceElement},
+     reexports::wayland_server::protocol::wl_surface::WlSurface,
+     utils::Rectangle,
+     wayland::input_method::{InputMethodHandler, PopupSurface},
+diff --git a/src/wayland/handlers/layer_shell.rs b/src/wayland/handlers/layer_shell.rs
+index 2366f0727..06be1db4c 100644
+--- a/src/wayland/handlers/layer_shell.rs
++++ b/src/wayland/handlers/layer_shell.rs
+@@ -3,7 +3,7 @@
+ use crate::{shell::PendingLayer, utils::prelude::*};
+ use smithay::{
+     delegate_layer_shell,
+-    desktop::{layer_map_for_output, LayerSurface, PopupKind, WindowSurfaceType},
++    desktop::{LayerSurface, PopupKind, WindowSurfaceType, layer_map_for_output},
+     output::Output,
+     reexports::wayland_server::protocol::wl_output::WlOutput,
+     wayland::shell::{
+diff --git a/src/wayland/handlers/output_configuration.rs b/src/wayland/handlers/output_configuration.rs
+index f0b55b102..163915237 100644
+--- a/src/wayland/handlers/output_configuration.rs
++++ b/src/wayland/handlers/output_configuration.rs
+@@ -8,8 +8,8 @@ use crate::{
+     state::State,
+     utils::prelude::OutputExt,
+     wayland::protocols::output_configuration::{
+-        delegate_output_configuration, ModeConfiguration, OutputConfiguration,
+-        OutputConfigurationHandler, OutputConfigurationState,
++        ModeConfiguration, OutputConfiguration, OutputConfigurationHandler,
++        OutputConfigurationState, delegate_output_configuration,
+     },
+ };
+ 
+diff --git a/src/wayland/handlers/output_power.rs b/src/wayland/handlers/output_power.rs
+index 1109ac00a..2675009a4 100644
+--- a/src/wayland/handlers/output_power.rs
++++ b/src/wayland/handlers/output_power.rs
+@@ -7,7 +7,7 @@ use crate::{
+     state::{BackendData, State},
+     utils::prelude::OutputExt,
+     wayland::protocols::output_power::{
+-        delegate_output_power, OutputPowerHandler, OutputPowerState,
++        OutputPowerHandler, OutputPowerState, delegate_output_power,
+     },
+ };
+ 
+diff --git a/src/wayland/handlers/overlap_notify.rs b/src/wayland/handlers/overlap_notify.rs
+index d58b231f1..729d366b6 100644
+--- a/src/wayland/handlers/overlap_notify.rs
++++ b/src/wayland/handlers/overlap_notify.rs
+@@ -1,5 +1,5 @@
+ use smithay::{
+-    desktop::{layer_map_for_output, LayerSurface, WindowSurfaceType},
++    desktop::{LayerSurface, WindowSurfaceType, layer_map_for_output},
+     output::Output,
+     reexports::wayland_protocols_wlr::layer_shell::v1::server::zwlr_layer_surface_v1::ZwlrLayerSurfaceV1,
+ };
+@@ -7,7 +7,7 @@ use smithay::{
+ use crate::{
+     state::State,
+     wayland::protocols::overlap_notify::{
+-        delegate_overlap_notify, OverlapNotifyHandler, OverlapNotifyState,
++        OverlapNotifyHandler, OverlapNotifyState, delegate_overlap_notify,
+     },
+ };
+ 
+diff --git a/src/wayland/handlers/pointer_constraints.rs b/src/wayland/handlers/pointer_constraints.rs
+index aa4a38ad1..55017268d 100644
+--- a/src/wayland/handlers/pointer_constraints.rs
++++ b/src/wayland/handlers/pointer_constraints.rs
+@@ -7,7 +7,7 @@ use smithay::{
+     reexports::wayland_server::protocol::wl_surface::WlSurface,
+     utils::{Logical, Point},
+     wayland::{
+-        pointer_constraints::{with_pointer_constraint, PointerConstraintsHandler},
++        pointer_constraints::{PointerConstraintsHandler, with_pointer_constraint},
+         seat::WaylandFocus,
+     },
+ };
+diff --git a/src/wayland/handlers/screencopy/mod.rs b/src/wayland/handlers/screencopy/mod.rs
+index 64134da0e..379b04add 100644
+--- a/src/wayland/handlers/screencopy/mod.rs
++++ b/src/wayland/handlers/screencopy/mod.rs
+@@ -27,9 +27,8 @@ use crate::{
+     wayland::protocols::{
+         image_capture_source::ImageCaptureSourceData,
+         screencopy::{
+-            delegate_screencopy, BufferConstraints, CursorSession, CursorSessionRef,
+-            DmabufConstraints, Frame, FrameRef, ScreencopyHandler, ScreencopyState, Session,
+-            SessionRef,
++            BufferConstraints, CursorSession, CursorSessionRef, DmabufConstraints, Frame, FrameRef,
++            ScreencopyHandler, ScreencopyState, Session, SessionRef, delegate_screencopy,
+         },
+     },
+ };
+diff --git a/src/wayland/handlers/screencopy/render.rs b/src/wayland/handlers/screencopy/render.rs
+index 4e059b54d..0013e0995 100644
+--- a/src/wayland/handlers/screencopy/render.rs
++++ b/src/wayland/handlers/screencopy/render.rs
+@@ -1,19 +1,19 @@
+ use calloop::LoopHandle;
+ use smithay::{
+     backend::{
+-        allocator::{dmabuf::Dmabuf, format::get_transparent, Buffer, Fourcc},
++        allocator::{Buffer, Fourcc, dmabuf::Dmabuf, format::get_transparent},
+         renderer::{
++            Bind, Blit, BufferType, Color32F, ExportMem, ImportAll, ImportMem, Offscreen, Renderer,
+             buffer_dimensions, buffer_type,
+             damage::{Error as DTError, OutputDamageTracker, RenderOutputResult},
+             element::{
++                AsRenderElements, RenderElement,
+                 surface::WaylandSurfaceRenderElement,
+                 utils::{Relocate, RelocateRenderElement},
+-                AsRenderElements, RenderElement,
+             },
+             gles::{GlesError, GlesRenderbuffer},
+             sync::SyncPoint,
+             utils::with_renderer_surface_state,
+-            Bind, Blit, BufferType, Color32F, ExportMem, ImportAll, ImportMem, Offscreen, Renderer,
+         },
+     },
+     desktop::space::SpaceElement,
+@@ -35,16 +35,16 @@ use tracing::warn;
+ 
+ use crate::{
+     backend::render::{
+-        cursor,
++        CursorMode, ElementFilter, RendererRef, cursor,
+         element::{AsGlowRenderer, CosmicElement, DamageElement, FromGlesError},
+-        render_workspace, CursorMode, ElementFilter, RendererRef,
++        render_workspace,
+     },
+     shell::{CosmicMappedRenderElement, CosmicSurface, WorkspaceRenderElement},
+     state::{Common, KmsNodes, State},
+     utils::prelude::{PointExt, PointGlobalExt, RectExt, RectLocalExt, SeatExt},
+     wayland::{
+         handlers::screencopy::{
+-            constraints_for_output, constraints_for_toplevel, SessionData, SessionUserData,
++            SessionData, SessionUserData, constraints_for_output, constraints_for_toplevel,
+         },
+         protocols::{
+             screencopy::{BufferConstraints, CursorSessionRef, FailureReason, Frame, SessionRef},
+diff --git a/src/wayland/handlers/screencopy/user_data.rs b/src/wayland/handlers/screencopy/user_data.rs
+index b780b0dd3..0a4995049 100644
+--- a/src/wayland/handlers/screencopy/user_data.rs
++++ b/src/wayland/handlers/screencopy/user_data.rs
+@@ -3,7 +3,7 @@ use std::{cell::RefCell, collections::HashMap, sync::Mutex};
+ use smithay::{
+     backend::renderer::{damage::OutputDamageTracker, utils::CommitCounter},
+     output::Output,
+-    reexports::wayland_server::{protocol::wl_buffer::WlBuffer, Resource, Weak},
++    reexports::wayland_server::{Resource, Weak, protocol::wl_buffer::WlBuffer},
+ };
+ 
+ use crate::{
+diff --git a/src/wayland/handlers/seat.rs b/src/wayland/handlers/seat.rs
+index 2c184dd23..f092ce19b 100644
+--- a/src/wayland/handlers/seat.rs
++++ b/src/wayland/handlers/seat.rs
+@@ -1,14 +1,14 @@
+ // SPDX-License-Identifier: GPL-3.0-only
+ 
+ use crate::{
+-    shell::focus::target::{KeyboardFocusTarget, PointerFocusTarget},
+     shell::Devices,
++    shell::focus::target::{KeyboardFocusTarget, PointerFocusTarget},
+     state::State,
+     utils::prelude::SeatExt,
+ };
+ use smithay::{
+     delegate_cursor_shape, delegate_seat,
+-    input::{keyboard::LedState, pointer::CursorImageStatus, SeatHandler, SeatState},
++    input::{SeatHandler, SeatState, keyboard::LedState, pointer::CursorImageStatus},
+ };
+ 
+ impl SeatHandler for State {
+diff --git a/src/wayland/handlers/session_lock.rs b/src/wayland/handlers/session_lock.rs
+index cbbbd5ac5..a831e5f22 100644
+--- a/src/wayland/handlers/session_lock.rs
++++ b/src/wayland/handlers/session_lock.rs
+@@ -4,7 +4,7 @@ use crate::{shell::SessionLock, state::State, utils::prelude::*};
+ use smithay::{
+     delegate_session_lock,
+     output::Output,
+-    reexports::wayland_server::{protocol::wl_output::WlOutput, Resource},
++    reexports::wayland_server::{Resource, protocol::wl_output::WlOutput},
+     utils::Size,
+     wayland::session_lock::{
+         LockSurface, SessionLockHandler, SessionLockManagerState, SessionLocker,
+diff --git a/src/wayland/handlers/toplevel_info.rs b/src/wayland/handlers/toplevel_info.rs
+index 37033f4fc..bf4b09abc 100644
+--- a/src/wayland/handlers/toplevel_info.rs
++++ b/src/wayland/handlers/toplevel_info.rs
+@@ -1,13 +1,13 @@
+ // SPDX-License-Identifier: GPL-3.0-only
+ 
+-use smithay::utils::{user_data::UserDataMap, Rectangle};
++use smithay::utils::{Rectangle, user_data::UserDataMap};
+ 
+ use crate::{
+     shell::CosmicSurface,
+     state::State,
+     utils::prelude::Global,
+     wayland::protocols::toplevel_info::{
+-        delegate_toplevel_info, ToplevelInfoHandler, ToplevelInfoState, Window,
++        ToplevelInfoHandler, ToplevelInfoState, Window, delegate_toplevel_info,
+     },
+ };
+ 
+diff --git a/src/wayland/handlers/toplevel_management.rs b/src/wayland/handlers/toplevel_management.rs
+index b39864290..27ff319ce 100644
+--- a/src/wayland/handlers/toplevel_management.rs
++++ b/src/wayland/handlers/toplevel_management.rs
+@@ -1,22 +1,22 @@
+ // SPDX-License-Identifier: GPL-3.0-only
+ 
+ use smithay::{
+-    desktop::{layer_map_for_output, WindowSurfaceType},
+-    input::{pointer::MotionEvent, Seat},
++    desktop::{WindowSurfaceType, layer_map_for_output},
++    input::{Seat, pointer::MotionEvent},
+     output::Output,
+     reexports::wayland_server::DisplayHandle,
+-    utils::{Point, Rectangle, Size, SERIAL_COUNTER},
++    utils::{Point, Rectangle, SERIAL_COUNTER, Size},
+     wayland::seat::WaylandFocus,
+ };
+ 
+ use crate::{
+-    shell::{focus::target::KeyboardFocusTarget, CosmicSurface, Shell, WorkspaceDelta},
++    shell::{CosmicSurface, Shell, WorkspaceDelta, focus::target::KeyboardFocusTarget},
+     utils::prelude::*,
+     wayland::protocols::{
+         toplevel_info::ToplevelInfoHandler,
+         toplevel_management::{
+-            delegate_toplevel_management, toplevel_rectangle_for, ManagementWindow,
+-            ToplevelManagementHandler, ToplevelManagementState,
++            ManagementWindow, ToplevelManagementHandler, ToplevelManagementState,
++            delegate_toplevel_management, toplevel_rectangle_for,
+         },
+         workspace::WorkspaceHandle,
+     },
+diff --git a/src/wayland/handlers/workspace.rs b/src/wayland/handlers/workspace.rs
+index 91270728e..fc5c83598 100644
+--- a/src/wayland/handlers/workspace.rs
++++ b/src/wayland/handlers/workspace.rs
+@@ -4,7 +4,7 @@ use crate::{
+     shell::WorkspaceDelta,
+     utils::prelude::*,
+     wayland::protocols::workspace::{
+-        delegate_workspace, Request, State as WState, WorkspaceHandler, WorkspaceState,
++        Request, State as WState, WorkspaceHandler, WorkspaceState, delegate_workspace,
+     },
+ };
+ use cosmic_protocols::workspace::v2::server::zcosmic_workspace_handle_v2::TilingState;
+diff --git a/src/wayland/handlers/xdg_activation.rs b/src/wayland/handlers/xdg_activation.rs
+index 06fbe7a5d..4114ad35f 100644
+--- a/src/wayland/handlers/xdg_activation.rs
++++ b/src/wayland/handlers/xdg_activation.rs
+@@ -1,5 +1,5 @@
+-use crate::shell::focus::target::KeyboardFocusTarget;
+ use crate::shell::WorkspaceDelta;
++use crate::shell::focus::target::KeyboardFocusTarget;
+ use crate::{shell::ActivationKey, state::ClientState, utils::prelude::*};
+ use crate::{
+     state::State,
+diff --git a/src/wayland/handlers/xdg_shell/mod.rs b/src/wayland/handlers/xdg_shell/mod.rs
+index 379cd5857..56efd92e7 100644
+--- a/src/wayland/handlers/xdg_shell/mod.rs
++++ b/src/wayland/handlers/xdg_shell/mod.rs
+@@ -1,17 +1,17 @@
+ // SPDX-License-Identifier: GPL-3.0-only
+ 
+ use crate::{
+-    shell::{focus::target::KeyboardFocusTarget, grabs::ReleaseMode, CosmicSurface, PendingWindow},
++    shell::{CosmicSurface, PendingWindow, focus::target::KeyboardFocusTarget, grabs::ReleaseMode},
+     utils::prelude::*,
+ };
+ use smithay::desktop::layer_map_for_output;
+ use smithay::{
+     delegate_xdg_shell,
+     desktop::{
+-        find_popup_root_surface, PopupGrab, PopupKeyboardGrab, PopupKind, PopupPointerGrab,
+-        PopupUngrabStrategy, WindowSurfaceType,
++        PopupGrab, PopupKeyboardGrab, PopupKind, PopupPointerGrab, PopupUngrabStrategy,
++        WindowSurfaceType, find_popup_root_surface,
+     },
+-    input::{pointer::Focus, Seat},
++    input::{Seat, pointer::Focus},
+     output::Output,
+     reexports::{
+         wayland_protocols::xdg::shell::server::xdg_toplevel,
+diff --git a/src/wayland/handlers/xdg_shell/popup.rs b/src/wayland/handlers/xdg_shell/popup.rs
+index 8879600c4..b008d0571 100644
+--- a/src/wayland/handlers/xdg_shell/popup.rs
++++ b/src/wayland/handlers/xdg_shell/popup.rs
+@@ -3,8 +3,8 @@
+ use crate::{shell::Shell, utils::prelude::*};
+ use smithay::{
+     desktop::{
+-        get_popup_toplevel_coords, layer_map_for_output, space::SpaceElement, LayerSurface,
+-        PopupKind, PopupManager, WindowSurfaceType,
++        LayerSurface, PopupKind, PopupManager, WindowSurfaceType, get_popup_toplevel_coords,
++        layer_map_for_output, space::SpaceElement,
+     },
+     output::Output,
+     reexports::{
+@@ -15,7 +15,7 @@ use smithay::{
+     wayland::{
+         compositor::{get_role, with_states},
+         seat::WaylandFocus,
+-        shell::xdg::{PopupSurface, ToplevelSurface, XdgPopupSurfaceData, XDG_POPUP_ROLE},
++        shell::xdg::{PopupSurface, ToplevelSurface, XDG_POPUP_ROLE, XdgPopupSurfaceData},
+     },
+ };
+ use tracing::warn;
+diff --git a/src/wayland/handlers/xwayland_keyboard_grab.rs b/src/wayland/handlers/xwayland_keyboard_grab.rs
+index bdb9c06db..1c99409a8 100644
+--- a/src/wayland/handlers/xwayland_keyboard_grab.rs
++++ b/src/wayland/handlers/xwayland_keyboard_grab.rs
+@@ -4,7 +4,7 @@ use crate::{shell::focus::target::KeyboardFocusTarget, state::State};
+ use smithay::{
+     delegate_xwayland_keyboard_grab,
+     input::Seat,
+-    reexports::wayland_server::{protocol::wl_surface::WlSurface, Resource},
++    reexports::wayland_server::{Resource, protocol::wl_surface::WlSurface},
+     wayland::xwayland_keyboard_grab::{XWaylandKeyboardGrab, XWaylandKeyboardGrabHandler},
+ };
+ use std::sync::Mutex;
+diff --git a/src/wayland/protocols/atspi.rs b/src/wayland/protocols/atspi.rs
+index c4f73ee7e..a85d9ab3d 100644
+--- a/src/wayland/protocols/atspi.rs
++++ b/src/wayland/protocols/atspi.rs
+@@ -5,7 +5,7 @@ use cosmic_protocols::atspi::v1::server::cosmic_atspi_manager_v1;
+ use smithay::{
+     backend::input::Keycode,
+     reexports::wayland_server::{
+-        backend::GlobalId, Client, DataInit, Dispatch, DisplayHandle, GlobalDispatch, New,
++        Client, DataInit, Dispatch, DisplayHandle, GlobalDispatch, New, backend::GlobalId,
+     },
+ };
+ use std::os::unix::{io::AsFd, net::UnixStream};
+diff --git a/src/wayland/protocols/corner_radius.rs b/src/wayland/protocols/corner_radius.rs
+index 3287ff241..5baafa238 100644
+--- a/src/wayland/protocols/corner_radius.rs
++++ b/src/wayland/protocols/corner_radius.rs
+@@ -3,9 +3,9 @@ use cosmic_protocols::corner_radius::v1::server::{
+     cosmic_corner_radius_manager_v1, cosmic_corner_radius_toplevel_v1,
+ };
+ use smithay::utils::HookId;
++use smithay::wayland::compositor::Cacheable;
+ use smithay::wayland::compositor::add_pre_commit_hook;
+ use smithay::wayland::compositor::with_states;
+-use smithay::wayland::compositor::Cacheable;
+ use smithay::wayland::shell::xdg::SurfaceCachedState;
+ use smithay::{
+     reexports::{
+diff --git a/src/wayland/protocols/drm.rs b/src/wayland/protocols/drm.rs
+index 99c4d8535..87eeb0db2 100644
+--- a/src/wayland/protocols/drm.rs
++++ b/src/wayland/protocols/drm.rs
+@@ -23,13 +23,13 @@ mod generated {
+ 
+ use smithay::{
+     backend::allocator::{
++        Fourcc, Modifier,
+         dmabuf::{Dmabuf, DmabufFlags},
+         format::FormatSet,
+-        Fourcc, Modifier,
+     },
+     reexports::wayland_server::{
+-        backend::GlobalId, protocol::wl_buffer::WlBuffer, Client, DataInit, Dispatch,
+-        DisplayHandle, GlobalDispatch, New, Resource,
++        Client, DataInit, Dispatch, DisplayHandle, GlobalDispatch, New, Resource,
++        backend::GlobalId, protocol::wl_buffer::WlBuffer,
+     },
+     wayland::{
+         buffer::BufferHandler,
+diff --git a/src/wayland/protocols/output_configuration/handlers/wlr.rs b/src/wayland/protocols/output_configuration/handlers/wlr.rs
+index 441b72447..7ab7a7182 100644
+--- a/src/wayland/protocols/output_configuration/handlers/wlr.rs
++++ b/src/wayland/protocols/output_configuration/handlers/wlr.rs
+@@ -12,8 +12,8 @@ use smithay::{
+             zwlr_output_mode_v1::{self, ZwlrOutputModeV1},
+         },
+         wayland_server::{
+-            backend::ClientId, Client, DataInit, Dispatch, DisplayHandle, GlobalDispatch, New,
+-            Resource,
++            Client, DataInit, Dispatch, DisplayHandle, GlobalDispatch, New, Resource,
++            backend::ClientId,
+         },
+     },
+     utils::{Point, Size},
+diff --git a/src/wayland/protocols/output_configuration/mod.rs b/src/wayland/protocols/output_configuration/mod.rs
+index c007568b1..59c100861 100644
+--- a/src/wayland/protocols/output_configuration/mod.rs
++++ b/src/wayland/protocols/output_configuration/mod.rs
+@@ -1,8 +1,8 @@
+ // SPDX-License-Identifier: GPL-3.0-only
+ 
+ use calloop::{
+-    timer::{TimeoutAction, Timer},
+     LoopHandle,
++    timer::{TimeoutAction, Timer},
+ };
+ use cosmic_comp_config::output::comp::AdaptiveSync;
+ use cosmic_protocols::output_management::v1::server::{
+@@ -23,8 +23,8 @@ use smithay::{
+             zwlr_output_mode_v1::ZwlrOutputModeV1,
+         },
+         wayland_server::{
+-            backend::GlobalId, protocol::wl_output::WlOutput, Client, Dispatch, DisplayHandle,
+-            GlobalDispatch, Resource, Weak,
++            Client, Dispatch, DisplayHandle, GlobalDispatch, Resource, Weak, backend::GlobalId,
++            protocol::wl_output::WlOutput,
+         },
+     },
+     utils::{Logical, Physical, Point, Size, Transform},
+diff --git a/src/wayland/protocols/output_power.rs b/src/wayland/protocols/output_power.rs
+index d977275af..f3d091113 100644
+--- a/src/wayland/protocols/output_power.rs
++++ b/src/wayland/protocols/output_power.rs
+@@ -8,8 +8,8 @@ use smithay::{
+             zwlr_output_power_v1::{self, ZwlrOutputPowerV1},
+         },
+         wayland_server::{
+-            backend::GlobalId, Client, DataInit, Dispatch, DisplayHandle, GlobalDispatch, New,
+-            Resource,
++            Client, DataInit, Dispatch, DisplayHandle, GlobalDispatch, New, Resource,
++            backend::GlobalId,
+         },
+     },
+ };
+diff --git a/src/wayland/protocols/overlap_notify.rs b/src/wayland/protocols/overlap_notify.rs
+index 46b7476bf..25352328b 100644
+--- a/src/wayland/protocols/overlap_notify.rs
++++ b/src/wayland/protocols/overlap_notify.rs
+@@ -13,7 +13,7 @@ use cosmic_protocols::{
+     },
+ };
+ use smithay::{
+-    desktop::{layer_map_for_output, LayerSurface},
++    desktop::{LayerSurface, layer_map_for_output},
+     output::Output,
+     reexports::{
+         wayland_protocols::ext::foreign_toplevel_list::v1::server::ext_foreign_toplevel_handle_v1::ExtForeignToplevelHandleV1,
+diff --git a/src/wayland/protocols/toplevel_info.rs b/src/wayland/protocols/toplevel_info.rs
+index 1e38a0962..af792b7a2 100644
+--- a/src/wayland/protocols/toplevel_info.rs
++++ b/src/wayland/protocols/toplevel_info.rs
+@@ -7,12 +7,12 @@ use smithay::{
+     reexports::{
+         wayland_protocols::ext::foreign_toplevel_list::v1::server::ext_foreign_toplevel_handle_v1::ExtForeignToplevelHandleV1,
+         wayland_server::{
++            Client, DataInit, Dispatch, DisplayHandle, GlobalDispatch, New, Resource, Weak,
+             backend::{ClientId, GlobalId},
+             protocol::{wl_output::WlOutput, wl_surface::WlSurface},
+-            Client, DataInit, Dispatch, DisplayHandle, GlobalDispatch, New, Resource, Weak,
+         },
+     },
+-    utils::{user_data::UserDataMap, IsAlive, Logical, Rectangle},
++    utils::{IsAlive, Logical, Rectangle, user_data::UserDataMap},
+     wayland::foreign_toplevel_list::{
+         ForeignToplevelHandle, ForeignToplevelListHandler, ForeignToplevelListState,
+     },
+diff --git a/src/wayland/protocols/toplevel_management.rs b/src/wayland/protocols/toplevel_management.rs
+index 0a2efe423..1347c8b74 100644
+--- a/src/wayland/protocols/toplevel_management.rs
++++ b/src/wayland/protocols/toplevel_management.rs
+@@ -4,9 +4,9 @@ use smithay::{
+     input::{Seat, SeatHandler},
+     output::Output,
+     reexports::wayland_server::{
++        Client, DataInit, Dispatch, DisplayHandle, GlobalDispatch, New, Resource,
+         backend::{ClientId, GlobalId},
+         protocol::wl_surface::WlSurface,
+-        Client, DataInit, Dispatch, DisplayHandle, GlobalDispatch, New, Resource,
+     },
+     utils::{Logical, Rectangle},
+ };
+@@ -17,7 +17,7 @@ use cosmic_protocols::toplevel_management::v1::server::zcosmic_toplevel_manager_
+ };
+ 
+ use super::{
+-    toplevel_info::{window_from_handle, ToplevelInfoHandler, ToplevelState, Window},
++    toplevel_info::{ToplevelInfoHandler, ToplevelState, Window, window_from_handle},
+     workspace::WorkspaceHandle,
+ };
+ 
+diff --git a/src/wayland/protocols/workspace/ext.rs b/src/wayland/protocols/workspace/ext.rs
+index bd0de973f..28d5cce99 100644
+--- a/src/wayland/protocols/workspace/ext.rs
++++ b/src/wayland/protocols/workspace/ext.rs
+@@ -11,8 +11,8 @@ use smithay::{
+             ext_workspace_manager_v1::{self, ExtWorkspaceManagerV1},
+         },
+         wayland_server::{
+-            backend::ClientId, protocol::wl_output::WlOutput, Client, DataInit, Dispatch,
+-            DisplayHandle, GlobalDispatch, New, Resource, Weak,
++            Client, DataInit, Dispatch, DisplayHandle, GlobalDispatch, New, Resource, Weak,
++            backend::ClientId, protocol::wl_output::WlOutput,
+         },
+     },
+ };
+diff --git a/src/wayland/protocols/workspace/mod.rs b/src/wayland/protocols/workspace/mod.rs
+index 5841a6cbd..e2fbb925f 100644
+--- a/src/wayland/protocols/workspace/mod.rs
++++ b/src/wayland/protocols/workspace/mod.rs
+@@ -9,8 +9,8 @@ use smithay::{
+             ext_workspace_manager_v1::ExtWorkspaceManagerV1,
+         },
+         wayland_server::{
+-            backend::{GlobalId, ObjectId},
+             Client, Dispatch, DisplayHandle, GlobalDispatch, Resource,
++            backend::{GlobalId, ObjectId},
+         },
+     },
+ };
+diff --git a/src/xwayland.rs b/src/xwayland.rs
+index 420533ca1..85fffb9e3 100644
+--- a/src/xwayland.rs
++++ b/src/xwayland.rs
+@@ -1,9 +1,9 @@
+ use std::{ffi::OsString, os::unix::io::OwnedFd, process::Stdio};
+ 
+ use crate::{
+-    backend::render::cursor::{load_cursor_env, load_cursor_theme, Cursor},
++    backend::render::cursor::{Cursor, load_cursor_env, load_cursor_theme},
+     shell::{
+-        focus::target::KeyboardFocusTarget, grabs::ReleaseMode, CosmicSurface, PendingWindow, Shell,
++        CosmicSurface, PendingWindow, Shell, focus::target::KeyboardFocusTarget, grabs::ReleaseMode,
+     },
+     state::State,
+     utils::prelude::*,
+@@ -16,23 +16,24 @@ use smithay::{
+         drm::DrmNode,
+         input::{ButtonState, KeyState, Keycode},
+         renderer::{
++            Bind, Frame, Offscreen, Renderer,
+             element::{
+-                memory::{MemoryRenderBuffer, MemoryRenderBufferRenderElement},
+                 Kind,
++                memory::{MemoryRenderBuffer, MemoryRenderBufferRenderElement},
+             },
+             pixman::{PixmanError, PixmanRenderer},
+             utils::draw_render_elements,
+-            Bind, Frame, Offscreen, Renderer,
+         },
+     },
+     desktop::space::SpaceElement,
+     input::{keyboard::ModifiersState, pointer::CursorIcon},
+     reexports::{wayland_server::Client, x11rb::protocol::xproto::Window as X11Window},
+     utils::{
+-        Buffer as BufferCoords, Logical, Point, Rectangle, Serial, Size, Transform, SERIAL_COUNTER,
++        Buffer as BufferCoords, Logical, Point, Rectangle, SERIAL_COUNTER, Serial, Size, Transform,
+     },
+     wayland::{
+         selection::{
++            SelectionTarget,
+             data_device::{
+                 clear_data_device_selection, current_data_device_selection_userdata,
+                 request_data_device_client_selection, set_data_device_selection,
+@@ -41,13 +42,12 @@ use smithay::{
+                 clear_primary_selection, current_primary_selection_userdata,
+                 request_primary_client_selection, set_primary_selection,
+             },
+-            SelectionTarget,
+         },
+         xdg_activation::XdgActivationToken,
+     },
+     xwayland::{
+-        xwm::{Reorder, XwmId},
+         X11Surface, X11Wm, XWayland, XWaylandClientData, XWaylandEvent, XwmHandler,
++        xwm::{Reorder, XwmId},
+     },
+ };
+ use tracing::{error, trace, warn};
