@@ -1,11 +1,6 @@
 [source.crates-io]
 replace-with = "vendored-sources"
 
-[source."git+https://github.com/DioxusLabs/taffy?rev=7781c70"]
-git = "https://github.com/DioxusLabs/taffy"
-rev = "7781c70"
-replace-with = "vendored-sources"
-
 [source."git+https://github.com/Drakulix/id-tree.git?branch=feature/copy_clone"]
 git = "https://github.com/Drakulix/id-tree.git"
 branch = "feature/copy_clone"

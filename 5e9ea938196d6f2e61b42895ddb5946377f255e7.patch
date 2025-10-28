@@ -1,0 +1,1235 @@
+From 5e9ea938196d6f2e61b42895ddb5946377f255e7 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Vuka=C5=A1in=20Vojinovi=C4=87?=
+ <150025636+git-f0x@users.noreply.github.com>
+Date: Thu, 16 Oct 2025 15:46:54 +0200
+Subject: [PATCH] chore: manual clippy
+
+---
+ src/backend/kms/device.rs                     |   4 +-
+ src/backend/kms/surface/mod.rs                |   9 +-
+ src/input/actions.rs                          |  18 ++-
+ src/input/mod.rs                              |  55 ++++---
+ src/shell/element/mod.rs                      |  14 +-
+ src/shell/element/stack.rs                    |  16 +-
+ src/shell/element/surface.rs                  |   5 +-
+ src/shell/focus/mod.rs                        |  21 +--
+ src/shell/layout/floating/grabs/resize.rs     |  16 +-
+ src/shell/layout/floating/mod.rs              |  58 ++++---
+ src/shell/layout/tiling/mod.rs                | 115 +++++++-------
+ src/shell/mod.rs                              | 146 +++++++-----------
+ src/shell/workspace.rs                        |  15 +-
+ src/utils/screenshot.rs                       |   2 +-
+ src/wayland/handlers/workspace.rs             |   5 +-
+ src/wayland/protocols/image_capture_source.rs |   9 +-
+ .../output_configuration/handlers/wlr.rs      |  17 +-
+ src/wayland/protocols/overlap_notify.rs       |   9 +-
+ src/wayland/protocols/toplevel_info.rs        |   4 +-
+ src/xwayland.rs                               |   6 +-
+ 20 files changed, 253 insertions(+), 291 deletions(-)
+
+diff --git a/src/backend/kms/device.rs b/src/backend/kms/device.rs
+index 989137982..627152f9e 100644
+--- a/src/backend/kms/device.rs
++++ b/src/backend/kms/device.rs
+@@ -598,7 +598,7 @@ impl Device {
+                 // see `removed`
+                 (Some(_), None) => true,
+                 // if we already know about it, we don't consider it added
+-                (None, _) => self.inner.outputs.get(conn).is_none(),
++                (None, _) => !self.inner.outputs.contains_key(conn),
+             })
+             .map(|(conn, crtc)| (*conn, *crtc))
+             .collect::<Vec<_>>();
+@@ -611,7 +611,7 @@ impl Device {
+                 Some(Some(c)) => surfaces.get(conn).is_some_and(|crtc| c != crtc),
+                 // if don't have a crtc, we need to drop the surface if it exists.
+                 // so it needs to be in both `removed` AND `added`.
+-                Some(None) => surfaces.get(conn).is_some(),
++                Some(None) => surfaces.contains_key(conn),
+                 _ => true,
+             })
+             .map(|(conn, _)| *conn)
+diff --git a/src/backend/kms/surface/mod.rs b/src/backend/kms/surface/mod.rs
+index 464992e58..8b963e006 100644
+--- a/src/backend/kms/surface/mod.rs
++++ b/src/backend/kms/surface/mod.rs
+@@ -1027,10 +1027,7 @@ impl SurfaceThreadState {
+             remove_frame_flags |= FrameFlags::ALLOW_OVERLAY_PLANE_SCANOUT;
+         }
+ 
+-        let mut vrr = match self.vrr_mode {
+-            AdaptiveSync::Force => true,
+-            _ => false,
+-        };
++        let mut vrr = matches!(self.vrr_mode, AdaptiveSync::Force);
+ 
+         if self.vrr_mode == AdaptiveSync::Enabled {
+             vrr = has_active_fullscreen;
+@@ -1754,7 +1751,7 @@ fn send_screencopy_result<'a>(
+             .collect::<Vec<_>>();
+ 
+         if let Some(tex) = pre_postprocess_data.texture.as_mut() {
+-            let mut tex_fb = renderer
++            let tex_fb = renderer
+                 .bind(tex)
+                 .map_err(RenderError::<<GlMultiRenderer as RendererSuper>::Error>::Rendering)?;
+ 
+@@ -1762,7 +1759,7 @@ fn send_screencopy_result<'a>(
+                 for rect in adjusted.iter().copied() {
+                     // TODO: On Vulkan, may need to combine sync points instead of just using latest?
+                     sync = renderer
+-                        .blit(&mut tex_fb, fb, rect, rect, TextureFilter::Linear)
++                        .blit(&tex_fb, fb, rect, rect, TextureFilter::Linear)
+                         .map_err(
+                             RenderError::<<GlMultiRenderer as RendererSuper>::Error>::Rendering,
+                         )?;
+diff --git a/src/input/actions.rs b/src/input/actions.rs
+index 9f74bf976..befd06adc 100644
+--- a/src/input/actions.rs
++++ b/src/input/actions.rs
+@@ -29,10 +29,10 @@ use std::{os::unix::process::CommandExt, thread};
+ use super::gestures;
+ 
+ fn propagate_by_default(action: &shortcuts::Action) -> bool {
+-    match action {
+-        shortcuts::Action::Focus(_) | shortcuts::Action::Move(_) => true,
+-        _ => false,
+-    }
++    matches!(
++        action,
++        shortcuts::Action::Focus(_) | shortcuts::Action::Move(_)
++    )
+ }
+ 
+ impl State {
+@@ -1066,10 +1066,12 @@ impl State {
+             .env("XDG_ACTIVATION_TOKEN", &*token)
+             .env("DESKTOP_STARTUP_ID", &*token)
+             .env_remove("COSMIC_SESSION_SOCK");
+-        unsafe { cmd.pre_exec(|| {
+-            crate::utils::rlimit::restore_nofile_limit();
+-            Ok(())
+-        }) };
++        unsafe {
++            cmd.pre_exec(|| {
++                crate::utils::rlimit::restore_nofile_limit();
++                Ok(())
++            })
++        };
+ 
+         std::thread::spawn(move || match cmd.spawn() {
+             Ok(mut child) => {
+diff --git a/src/input/mod.rs b/src/input/mod.rs
+index 9047606f0..c6f3c7414 100644
+--- a/src/input/mod.rs
++++ b/src/input/mod.rs
+@@ -306,14 +306,14 @@ impl State {
+             InputEvent::PointerMotion { event, .. } => {
+                 use smithay::backend::input::PointerMotionEvent;
+ 
+-                let mut shell = self.common.shell.write();
++                let shell = self.common.shell.write();
+                 if let Some(seat) = shell.seats.for_device(&event.device()).cloned() {
+                     self.common.idle_notifier_state.notify_activity(&seat);
+                     let current_output = seat.active_output();
+ 
+                     let mut position = seat.get_pointer().unwrap().current_location().as_global();
+ 
+-                    let under = State::surface_under(position, &current_output, &mut shell)
++                    let under = State::surface_under(position, &current_output, &shell)
+                         .map(|(target, pos)| (target, pos.as_logical()));
+ 
+                     let ptr = seat.get_pointer().unwrap();
+@@ -357,7 +357,7 @@ impl State {
+                         .cloned()
+                         .unwrap_or(current_output.clone());
+ 
+-                    let new_under = State::surface_under(position, &output, &mut shell)
++                    let new_under = State::surface_under(position, &output, &shell)
+                         .map(|(target, pos)| (target, pos.as_logical()));
+ 
+                     std::mem::drop(shell);
+@@ -381,19 +381,17 @@ impl State {
+                             .user_data()
+                             .get::<ResizeGrabMarker>()
+                             .map(|marker| marker.get())
+-                            .unwrap_or(false) && output != current_output {
++                            .unwrap_or(false)
++                            && output != current_output
++                        {
+                             ptr.frame(self);
+                             return;
+                         }
+                         //If the pointer isn't grabbed, we should check if the focused element should be updated
+                     } else if self.common.config.cosmic_conf.focus_follows_cursor {
+                         let shell = self.common.shell.read();
+-                        let old_keyboard_target = State::element_under(
+-                            original_position,
+-                            &current_output,
+-                            &shell,
+-                            &seat,
+-                        );
++                        let old_keyboard_target =
++                            State::element_under(original_position, &current_output, &shell, &seat);
+                         let new_keyboard_target =
+                             State::element_under(position, &output, &shell, &seat);
+ 
+@@ -621,9 +619,8 @@ impl State {
+                         )
+                         .as_global();
+                     let serial = SERIAL_COUNTER.next_serial();
+-                    let under =
+-                        State::surface_under(position, &output, &mut self.common.shell.write())
+-                            .map(|(target, pos)| (target, pos.as_logical()));
++                    let under = State::surface_under(position, &output, &self.common.shell.write())
++                        .map(|(target, pos)| (target, pos.as_logical()));
+ 
+                     let ptr = seat.get_pointer().unwrap();
+                     ptr.motion(
+@@ -1241,7 +1238,7 @@ impl State {
+             }
+ 
+             InputEvent::TouchDown { event, .. } => {
+-                let mut shell = self.common.shell.write();
++                let shell = self.common.shell.write();
+                 if let Some(seat) = shell.seats.for_device(&event.device()).cloned() {
+                     self.common.idle_notifier_state.notify_activity(&seat);
+                     let Some(output) =
+@@ -1253,7 +1250,7 @@ impl State {
+ 
+                     let position =
+                         transform_output_mapped_position(&output, &event, shell.zoom_state());
+-                    let under = State::surface_under(position, &output, &mut shell)
++                    let under = State::surface_under(position, &output, &shell)
+                         .map(|(target, pos)| (target, pos.as_logical()));
+ 
+                     std::mem::drop(shell);
+@@ -1273,7 +1270,7 @@ impl State {
+                 }
+             }
+             InputEvent::TouchMotion { event, .. } => {
+-                let mut shell = self.common.shell.write();
++                let shell = self.common.shell.write();
+                 if let Some(seat) = shell.seats.for_device(&event.device()).cloned() {
+                     self.common.idle_notifier_state.notify_activity(&seat);
+                     let Some(output) =
+@@ -1285,7 +1282,7 @@ impl State {
+ 
+                     let position =
+                         transform_output_mapped_position(&output, &event, shell.zoom_state());
+-                    let under = State::surface_under(position, &output, &mut shell)
++                    let under = State::surface_under(position, &output, &shell)
+                         .map(|(target, pos)| (target, pos.as_logical()));
+ 
+                     std::mem::drop(shell);
+@@ -1356,7 +1353,7 @@ impl State {
+             }
+ 
+             InputEvent::TabletToolAxis { event, .. } => {
+-                let mut shell = self.common.shell.write();
++                let shell = self.common.shell.write();
+                 if let Some(seat) = shell.seats.for_device(&event.device()).cloned() {
+                     self.common.idle_notifier_state.notify_activity(&seat);
+                     let Some(output) =
+@@ -1368,7 +1365,7 @@ impl State {
+ 
+                     let position =
+                         transform_output_mapped_position(&output, &event, shell.zoom_state());
+-                    let under = State::surface_under(position, &output, &mut shell)
++                    let under = State::surface_under(position, &output, &shell)
+                         .map(|(target, pos)| (target, pos.as_logical()));
+ 
+                     std::mem::drop(shell);
+@@ -1421,7 +1418,7 @@ impl State {
+                 }
+             }
+             InputEvent::TabletToolProximity { event, .. } => {
+-                let mut shell = self.common.shell.write();
++                let shell = self.common.shell.write();
+                 if let Some(seat) = shell.seats.for_device(&event.device()).cloned() {
+                     self.common.idle_notifier_state.notify_activity(&seat);
+                     let Some(output) =
+@@ -1433,7 +1430,7 @@ impl State {
+ 
+                     let position =
+                         transform_output_mapped_position(&output, &event, shell.zoom_state());
+-                    let under = State::surface_under(position, &output, &mut shell)
++                    let under = State::surface_under(position, &output, &shell)
+                         .map(|(target, pos)| (target, pos.as_logical()));
+ 
+                     std::mem::drop(shell);
+@@ -1594,12 +1591,9 @@ impl State {
+                 .unwrap_or(false)
+         });
+ 
+-        self.common.atspi_ei.input(
+-            modifiers,
+-            &handle,
+-            event.state(),
+-            event.time() * 1000,
+-        );
++        self.common
++            .atspi_ei
++            .input(modifiers, &handle, event.state(), event.time() * 1000);
+ 
+         // Leave move overview mode, if any modifier was released
+         if let Some(Trigger::KeyboardMove(action_modifiers)) =
+@@ -1770,7 +1764,10 @@ impl State {
+                 .active_virtual_mods
+                 .remove(&event.key_code());
+             // If `Caps_Lock` is a virtual modifier, and is in locked state, clear it
+-            if removed && handle.modified_sym() == Keysym::Caps_Lock && (modifiers.serialized.locked & 2) != 0 {
++            if removed
++                && handle.modified_sym() == Keysym::Caps_Lock
++                && (modifiers.serialized.locked & 2) != 0
++            {
+                 let serial = SERIAL_COUNTER.next_serial();
+                 let time = self.common.clock.now().as_millis();
+                 keyboard.input(
+@@ -2323,7 +2320,7 @@ fn cursor_sessions_for_output<'a>(
+         })
+ }
+ 
+-fn transform_output_mapped_position<'a, B, E>(
++fn transform_output_mapped_position<B, E>(
+     output: &Output,
+     event: &E,
+     zoom_state: Option<&ZoomState>,
+diff --git a/src/shell/element/mod.rs b/src/shell/element/mod.rs
+index c33a0bd9d..99f96891b 100644
+--- a/src/shell/element/mod.rs
++++ b/src/shell/element/mod.rs
+@@ -241,7 +241,9 @@ impl CosmicMapped {
+     }
+ 
+     pub fn focus_window(&self, window: &CosmicSurface) {
+-        if let CosmicMappedInternal::Stack(stack) = &self.element { stack.set_active(window) }
++        if let CosmicMappedInternal::Stack(stack) = &self.element {
++            stack.set_active(window)
++        }
+     }
+ 
+     pub fn has_surface(&self, surface: &WlSurface, surface_type: WindowSurfaceType) -> bool {
+@@ -480,17 +482,11 @@ impl CosmicMapped {
+     }
+ 
+     pub fn is_window(&self) -> bool {
+-        match &self.element {
+-            CosmicMappedInternal::Window(_) => true,
+-            _ => false,
+-        }
++        matches!(&self.element, CosmicMappedInternal::Window(_))
+     }
+ 
+     pub fn is_stack(&self) -> bool {
+-        match &self.element {
+-            CosmicMappedInternal::Stack(_) => true,
+-            _ => false,
+-        }
++        matches!(&self.element, CosmicMappedInternal::Stack(_))
+     }
+ 
+     pub fn stack_ref(&self) -> Option<&CosmicStack> {
+diff --git a/src/shell/element/stack.rs b/src/shell/element/stack.rs
+index 53ef1cbf0..e277d5ef6 100644
+--- a/src/shell/element/stack.rs
++++ b/src/shell/element/stack.rs
+@@ -544,12 +544,8 @@ impl CosmicStack {
+     }
+ 
+     pub fn pending_size(&self) -> Option<Size<i32, Logical>> {
+-        self.0.with_program(|p| {
+-            (*p.geometry
+-                .lock()
+-                .unwrap())
+-                .map(|geo| geo.size.as_logical())
+-        })
++        self.0
++            .with_program(|p| (*p.geometry.lock().unwrap()).map(|geo| geo.size.as_logical()))
+     }
+ 
+     pub fn set_geometry(&self, geo: Rectangle<i32, Global>) {
+@@ -1465,11 +1461,15 @@ impl PointerTarget<State> for CosmicStack {
+     }
+ 
+     fn axis(&self, seat: &Seat<State>, data: &mut State, frame: AxisFrame) {
+-        if let Some(Focus::Header) = self.0.with_program(|p| p.current_focus()) { PointerTarget::axis(&self.0, seat, data, frame) }
++        if let Some(Focus::Header) = self.0.with_program(|p| p.current_focus()) {
++            PointerTarget::axis(&self.0, seat, data, frame)
++        }
+     }
+ 
+     fn frame(&self, seat: &Seat<State>, data: &mut State) {
+-        if let Some(Focus::Header) = self.0.with_program(|p| p.current_focus()) { PointerTarget::frame(&self.0, seat, data) }
++        if let Some(Focus::Header) = self.0.with_program(|p| p.current_focus()) {
++            PointerTarget::frame(&self.0, seat, data)
++        }
+     }
+ 
+     fn leave(&self, seat: &Seat<State>, data: &mut State, serial: Serial, time: u32) {
+diff --git a/src/shell/element/surface.rs b/src/shell/element/surface.rs
+index 9da424ffa..14e5b3095 100644
+--- a/src/shell/element/surface.rs
++++ b/src/shell/element/surface.rs
+@@ -93,7 +93,7 @@ impl PartialEq<ToplevelSurface> for CosmicSurface {
+ 
+ impl PartialEq<X11Surface> for CosmicSurface {
+     fn eq(&self, other: &X11Surface) -> bool {
+-        self.x11_surface().map_or(false, |s| s == other)
++        self.x11_surface() == Some(other)
+     }
+ }
+ 
+@@ -278,8 +278,7 @@ impl CosmicSurface {
+         match self.0.underlying_surface() {
+             WindowSurface::Wayland(toplevel) => {
+                 if enable {
+-                    let previous_decoration_state =
+-                        toplevel.current_state().decoration_mode;
++                    let previous_decoration_state = toplevel.current_state().decoration_mode;
+                     if PreferredDecorationMode::is_unset(&self.0) {
+                         PreferredDecorationMode::update(&self.0, previous_decoration_state);
+                     }
+diff --git a/src/shell/focus/mod.rs b/src/shell/focus/mod.rs
+index e402f69e2..34dc80310 100644
+--- a/src/shell/focus/mod.rs
++++ b/src/shell/focus/mod.rs
+@@ -200,14 +200,12 @@ impl Shell {
+         let workspace = target
+             .wl_surface()
+             .and_then(|surface| self.workspace_for_surface(&surface));
+-        let workspace = if workspace.is_none() {
++        let workspace = if let Some(workspace) = workspace {
++            self.workspaces.space_for_handle_mut(&workspace.0).unwrap()
++        } else {
+             //should this be the active output or the focused output?
+             self.active_space_mut(&seat.focused_or_active_output())
+                 .unwrap()
+-        } else {
+-            self.workspaces
+-                .space_for_handle_mut(&workspace.unwrap().0)
+-                .unwrap()
+         };
+ 
+         let mut focus_stack = workspace.focus_stack.get_mut(seat);
+@@ -329,7 +327,10 @@ fn update_focus_state(
+ ) {
+     // update keyboard focus
+     if let Some(keyboard) = seat.get_keyboard() {
+-        if should_update_cursor && state.common.config.cosmic_conf.cursor_follows_focus && target.is_some() {
++        if should_update_cursor
++            && state.common.config.cosmic_conf.cursor_follows_focus
++            && target.is_some()
++        {
+             //need to borrow mutably for surface under
+             let shell = state.common.shell.read();
+             // get the top left corner of the target element
+@@ -681,8 +682,8 @@ fn update_pointer_focus(state: &mut State, seat: &Seat<State>) {
+         let output = seat.active_output();
+         let position = pointer.current_location().as_global();
+ 
+-        let mut shell = state.common.shell.write();
+-        let under = State::surface_under(position, &output, &mut shell)
++        let shell = state.common.shell.write();
++        let under = State::surface_under(position, &output, &shell)
+             .map(|(target, pos)| (target, pos.as_logical()));
+         drop(shell);
+ 
+@@ -707,7 +708,9 @@ fn exclusive_layer_surface_layer(shell: &Shell) -> Option<Layer> {
+     for output in shell.outputs() {
+         for layer_surface in layer_map_for_output(output).layers() {
+             let data = layer_surface.cached_state();
+-            if data.keyboard_interactivity == KeyboardInteractivity::Exclusive && data.layer as u32 >= layer.unwrap_or(Layer::Top) as u32 {
++            if data.keyboard_interactivity == KeyboardInteractivity::Exclusive
++                && data.layer as u32 >= layer.unwrap_or(Layer::Top) as u32
++            {
+                 layer = Some(data.layer);
+             }
+         }
+diff --git a/src/shell/layout/floating/grabs/resize.rs b/src/shell/layout/floating/grabs/resize.rs
+index 2d1538616..ee5a67c8d 100644
+--- a/src/shell/layout/floating/grabs/resize.rs
++++ b/src/shell/layout/floating/grabs/resize.rs
+@@ -108,7 +108,9 @@ impl ResizeSurfaceGrab {
+                         + self.initial_window_location.x;
+                 }
+             } else if (self.initial_window_location.x + self.initial_window_size.w + dx as i32
+-                - output_geom.loc.x - output_geom.size.w).unsigned_abs()
++                - output_geom.loc.x
++                - output_geom.size.w)
++                .unsigned_abs()
+                 < self.edge_snap_threshold
+             {
+                 new_window_width =
+@@ -134,7 +136,9 @@ impl ResizeSurfaceGrab {
+                         + self.initial_window_location.y;
+                 }
+             } else if (self.initial_window_location.y + self.initial_window_size.h + dy as i32
+-                - output_geom.loc.y - output_geom.size.h).unsigned_abs()
++                - output_geom.loc.y
++                - output_geom.size.h)
++                .unsigned_abs()
+                 < self.edge_snap_threshold
+             {
+                 new_window_height =
+@@ -146,8 +150,8 @@ impl ResizeSurfaceGrab {
+ 
+         let min_width = min_size.map(|s| s.w).unwrap_or(360);
+         let min_height = min_size.map(|s| s.h).unwrap_or(240);
+-        let max_width = max_size.map(|s| s.w).unwrap_or(i32::max_value());
+-        let max_height = max_size.map(|s| s.h).unwrap_or(i32::max_value());
++        let max_width = max_size.map(|s| s.w).unwrap_or(i32::MAX);
++        let max_height = max_size.map(|s| s.h).unwrap_or(i32::MAX);
+ 
+         new_window_width = new_window_width.max(min_width).min(max_width);
+         new_window_height = new_window_height.max(min_height).min(max_height);
+@@ -353,7 +357,9 @@ impl TouchGrab<State> for ResizeSurfaceGrab {
+         event: &TouchMotionEvent,
+         seq: Serial,
+     ) {
+-        if event.slot == <Self as TouchGrab<State>>::start_data(self).slot && self.update_location(event.location.as_global()) {
++        if event.slot == <Self as TouchGrab<State>>::start_data(self).slot
++            && self.update_location(event.location.as_global())
++        {
+             handle.unset_grab(self, data);
+         }
+ 
+diff --git a/src/shell/layout/floating/mod.rs b/src/shell/layout/floating/mod.rs
+index 44648e1ae..126108403 100644
+--- a/src/shell/layout/floating/mod.rs
++++ b/src/shell/layout/floating/mod.rs
+@@ -650,10 +650,7 @@ impl FloatingLayout {
+         window: &CosmicMapped,
+         to: Option<Rectangle<i32, Local>>,
+     ) -> Option<Rectangle<i32, Local>> {
+-        let Some(mut mapped_geometry) = self.space.element_geometry(window).map(RectExt::as_local)
+-        else {
+-            return None;
+-        };
++        let mut mapped_geometry = self.space.element_geometry(window).map(RectExt::as_local)?;
+         let _ = self.animations.remove(window);
+ 
+         if let Some(to) = to {
+@@ -673,7 +670,7 @@ impl FloatingLayout {
+             );
+         }
+ 
+-        if let Some(_) = window.floating_tiled.lock().unwrap().take() {
++        if window.floating_tiled.lock().unwrap().take().is_some() {
+             if let Some(last_size) = window.last_geometry.lock().unwrap().map(|geo| geo.size) {
+                 let geometry = Rectangle::new(mapped_geometry.loc, last_size);
+                 window.set_tiled(false);
+@@ -972,8 +969,8 @@ impl FloatingLayout {
+         let (min_size, max_size) = (mapped.min_size(), mapped.max_size());
+         let min_width = min_size.map(|s| s.w).unwrap_or(360);
+         let min_height = min_size.map(|s| s.h).unwrap_or(240);
+-        let max_width = max_size.map(|s| s.w).unwrap_or(i32::max_value());
+-        let max_height = max_size.map(|s| s.h).unwrap_or(i32::max_value());
++        let max_width = max_size.map(|s| s.w).unwrap_or(i32::MAX);
++        let max_height = max_size.map(|s| s.h).unwrap_or(i32::MAX);
+ 
+         geo.size.w = min_width.max(geo.size.w).min(max_width);
+         geo.size.h = min_height.max(geo.size.h).min(max_height);
+@@ -1313,29 +1310,26 @@ impl FloatingLayout {
+             let window_geometry = if mapped.is_maximized(false) {
+                 geometry
+             } else {
+-                prev
+-                    .map(|mut rect| {
+-                        if let Some(old_size) = old_output_size {
+-                            rect = Rectangle::new(
+-                                Point::new(
+-                                    (rect.loc.x as f64 + rect.size.w as f64 / 2.)
+-                                        / old_size.w as f64
+-                                        * output_size.w as f64
+-                                        - rect.size.w as f64 / 2.,
+-                                    (rect.loc.y as f64 + rect.size.h as f64 / 2.)
+-                                        / old_size.h as f64
+-                                        * output_size.h as f64
+-                                        - rect.size.h as f64 / 2.,
+-                                ),
+-                                rect.size.to_f64(),
+-                            )
+-                            .to_i32_round();
+-                        }
+-                        Rectangle::new(rect.loc.constrain(geometry), rect.size)
+-                    })
+-                    .unwrap_or_else(|| {
+-                        Rectangle::new(Point::from((0, 0)), mapped.geometry().size.as_local())
+-                    })
++                prev.map(|mut rect| {
++                    if let Some(old_size) = old_output_size {
++                        rect = Rectangle::new(
++                            Point::new(
++                                (rect.loc.x as f64 + rect.size.w as f64 / 2.) / old_size.w as f64
++                                    * output_size.w as f64
++                                    - rect.size.w as f64 / 2.,
++                                (rect.loc.y as f64 + rect.size.h as f64 / 2.) / old_size.h as f64
++                                    * output_size.h as f64
++                                    - rect.size.h as f64 / 2.,
++                            ),
++                            rect.size.to_f64(),
++                        )
++                        .to_i32_round();
++                    }
++                    Rectangle::new(rect.loc.constrain(geometry), rect.size)
++                })
++                .unwrap_or_else(|| {
++                    Rectangle::new(Point::from((0, 0)), mapped.geometry().size.as_local())
++                })
+             };
+             mapped.set_geometry(window_geometry.to_global(&output));
+ 
+@@ -1529,7 +1523,7 @@ impl FloatingLayout {
+                                         .to_physical_precise_round(output_scale),
+                                     scale,
+                                 );
+-                                
++
+                                 RelocateRenderElement::from_element(
+                                     rescaled,
+                                     (geometry.loc - original_geo.loc)
+@@ -1549,7 +1543,7 @@ impl FloatingLayout {
+                                         .to_physical_precise_round(output_scale),
+                                     scale,
+                                 );
+-                                
++
+                                 RelocateRenderElement::from_element(
+                                     rescaled,
+                                     (geometry.loc - original_geo.loc)
+diff --git a/src/shell/layout/tiling/mod.rs b/src/shell/layout/tiling/mod.rs
+index 7f7fb9263..08aa8dffd 100644
+--- a/src/shell/layout/tiling/mod.rs
++++ b/src/shell/layout/tiling/mod.rs
+@@ -202,10 +202,7 @@ impl Data {
+         }
+     }
+     fn is_placeholder(&self) -> bool {
+-        match self {
+-            Data::Placeholder { .. } => true,
+-            _ => false,
+-        }
++        matches!(self, Data::Placeholder { .. })
+     }
+ 
+     fn orientation(&self) -> Orientation {
+@@ -409,7 +406,7 @@ impl TilingLayout {
+ 
+         let mut tree = self.queue.trees.back().unwrap().0.copy_clone();
+         let last_active = focus_stack
+-            .and_then(|focus_stack| TilingLayout::last_active_window(&mut tree, focus_stack))
++            .and_then(|focus_stack| TilingLayout::last_active_window(&tree, focus_stack))
+             .map(|(node_id, _)| node_id);
+         let duration = if minimize_rect.is_some() {
+             MINIMIZE_ANIMATION_DURATION
+@@ -1502,7 +1499,7 @@ impl TilingLayout {
+         let Some(target) = seat.get_keyboard().unwrap().current_focus() else {
+             return MoveResult::None;
+         };
+-        let Some((node_id, data)) = TilingLayout::currently_focused_node(&mut tree, target) else {
++        let Some((node_id, data)) = TilingLayout::currently_focused_node(&tree, target) else {
+             return MoveResult::None;
+         };
+ 
+@@ -1734,7 +1731,8 @@ impl TilingLayout {
+                                 // we move again by making a new fork
+                                 let old_id = tree
+                                     .children_ids(&next_child_id)
+-                                    .unwrap().nth(group_len / 2)
++                                    .unwrap()
++                                    .nth(group_len / 2)
+                                     .unwrap()
+                                     .clone();
+                                 TilingLayout::new_group(
+@@ -2122,11 +2120,7 @@ impl TilingLayout {
+         mut focus_stack: FocusStackMut,
+     ) -> Option<KeyboardFocusTarget> {
+         let gaps = self.gaps();
+-
+-        let Some(node_id) = mapped.tiling_node_id.lock().unwrap().clone() else {
+-            return None;
+-        };
+-
++        let node_id = mapped.tiling_node_id.lock().unwrap().clone()?;
+         let mut tree = self.queue.trees.back().unwrap().0.copy_clone();
+         if tree.get(&node_id).is_err() {
+             return None;
+@@ -2239,11 +2233,7 @@ impl TilingLayout {
+         mut focus_stack: FocusStackMut,
+     ) -> Option<KeyboardFocusTarget> {
+         let gaps = self.gaps();
+-
+-        let Some(target) = seat.get_keyboard().unwrap().current_focus() else {
+-            return None;
+-        };
+-
++        let target = seat.get_keyboard().unwrap().current_focus()?;
+         let mut tree = self.queue.trees.back().unwrap().0.copy_clone();
+         if let Some((last_active, last_active_data)) =
+             TilingLayout::currently_focused_node(&tree, target)
+@@ -2974,9 +2964,7 @@ impl TilingLayout {
+             let mut configures = Vec::new();
+ 
+             let (outer, inner) = gaps;
+-            let mut geo = layer_map_for_output(output)
+-                .non_exclusive_zone()
+-                .as_local();
++            let mut geo = layer_map_for_output(output).non_exclusive_zone().as_local();
+             geo.loc.x += outer;
+             geo.loc.y += outer;
+             geo.size.w -= outer * 2;
+@@ -3308,7 +3296,8 @@ impl TilingLayout {
+                         (last_geometry.loc
+                             + tree
+                                 .children(&id)
+-                                .unwrap().nth(idx)
++                                .unwrap()
++                                .nth(idx)
+                                 .map(|node| {
+                                     let geo = node.data().geometry();
+                                     geo.loc + geo.size
+@@ -3634,12 +3623,14 @@ impl TilingLayout {
+                             None,
+                             tree.traverse_pre_order_ids(root)
+                                 .unwrap()
+-                                .find(|id| match tree.get(id).unwrap().data() {
+-                                    Data::Placeholder {
+-                                        type_: PlaceholderType::GrabbedWindow,
+-                                        ..
+-                                    } => true,
+-                                    _ => false,
++                                .find(|id| {
++                                    matches!(
++                                        tree.get(id).unwrap().data(),
++                                        Data::Placeholder {
++                                            type_: PlaceholderType::GrabbedWindow,
++                                            ..
++                                        }
++                                    )
+                                 })
+                                 .map(TargetZone::InitialPlaceholder)
+                                 .unwrap_or(TargetZone::Initial),
+@@ -3817,38 +3808,40 @@ impl TilingLayout {
+ 
+     pub fn mapped(&self) -> impl Iterator<Item = (&CosmicMapped, Rectangle<i32, Local>)> {
+         let tree = &self.queue.trees.back().unwrap().0;
+-        let iter = tree.root_node_id().map(|root| tree.traverse_pre_order(root)
+-                    .unwrap()
+-                    .filter(|node| node.data().is_mapped(None))
+-                    .filter(|node| match node.data() {
+-                        Data::Mapped { mapped, .. } => mapped.is_activated(false),
+-                        _ => unreachable!(),
+-                    })
+-                    .map(|node| match node.data() {
+-                        Data::Mapped {
+-                            mapped,
+-                            last_geometry,
+-                            ..
+-                        } => (mapped, *last_geometry),
+-                        _ => unreachable!(),
+-                    })
+-                    .chain(
+-                        tree.traverse_pre_order(root)
+-                            .unwrap()
+-                            .filter(|node| node.data().is_mapped(None))
+-                            .filter(|node| match node.data() {
+-                                Data::Mapped { mapped, .. } => !mapped.is_activated(false),
+-                                _ => unreachable!(),
+-                            })
+-                            .map(|node| match node.data() {
+-                                Data::Mapped {
+-                                    mapped,
+-                                    last_geometry,
+-                                    ..
+-                                } => (mapped, *last_geometry),
+-                                _ => unreachable!(),
+-                            }),
+-                    ));
++        let iter = tree.root_node_id().map(|root| {
++            tree.traverse_pre_order(root)
++                .unwrap()
++                .filter(|node| node.data().is_mapped(None))
++                .filter(|node| match node.data() {
++                    Data::Mapped { mapped, .. } => mapped.is_activated(false),
++                    _ => unreachable!(),
++                })
++                .map(|node| match node.data() {
++                    Data::Mapped {
++                        mapped,
++                        last_geometry,
++                        ..
++                    } => (mapped, *last_geometry),
++                    _ => unreachable!(),
++                })
++                .chain(
++                    tree.traverse_pre_order(root)
++                        .unwrap()
++                        .filter(|node| node.data().is_mapped(None))
++                        .filter(|node| match node.data() {
++                            Data::Mapped { mapped, .. } => !mapped.is_activated(false),
++                            _ => unreachable!(),
++                        })
++                        .map(|node| match node.data() {
++                            Data::Mapped {
++                                mapped,
++                                last_geometry,
++                                ..
++                            } => (mapped, *last_geometry),
++                            _ => unreachable!(),
++                        }),
++                )
++        });
+         iter.into_iter().flatten()
+     }
+ 
+@@ -4317,7 +4310,9 @@ where
+                 .and_then(|target| TilingLayout::currently_focused_node(tree, target))
+         })
+         .map(|(id, _)| id);
+-    let focused_geo = focused.as_ref().map(|focused_id| *tree.get(focused_id).unwrap().data().geometry());
++    let focused_geo = focused
++        .as_ref()
++        .map(|focused_id| *tree.get(focused_id).unwrap().data().geometry());
+ 
+     let has_potential_groups = if let Some(focused_id) = focused.as_ref() {
+         let focused_node = tree.get(focused_id).unwrap();
+diff --git a/src/shell/mod.rs b/src/shell/mod.rs
+index 00dc808d8..97768f45d 100644
+--- a/src/shell/mod.rs
++++ b/src/shell/mod.rs
+@@ -591,7 +591,8 @@ impl WorkspaceSet {
+         // add empty at the end, if necessary
+         if self
+             .workspaces
+-            .last().is_none_or(|last| !last.is_empty() || last.pinned)
++            .last()
++            .is_none_or(|last| !last.is_empty() || last.pinned)
+         {
+             self.add_empty_workspace(state);
+         }
+@@ -606,7 +607,8 @@ impl WorkspaceSet {
+                 let previous_is_empty = i > 0
+                     && self
+                         .workspaces
+-                        .get(i - 1).is_some_and(|w| w.is_empty() && !w.pinned);
++                        .get(i - 1)
++                        .is_some_and(|w| w.is_empty() && !w.pinned);
+                 let keep = if workspace.can_auto_remove(xdg_activation_state) {
+                     // Keep empty workspace if it's active, or it's the last workspace,
+                     // and the previous worspace is not both active and empty.
+@@ -1605,32 +1607,21 @@ impl Shell {
+                     ) {
+                         set.workspaces[set.active].tiling_layer.cleanup_drag();
+                     }
+-                    if let Some((_, workspace_delta)) = set.previously_active {
+-                        match workspace_delta {
+-                            WorkspaceDelta::Gesture(delta) => {
+-                                if (velocity > 0.0 && velocity.abs() >= GESTURE_VELOCITY_THRESHOLD)
+-                                    || (velocity.abs() < GESTURE_VELOCITY_THRESHOLD
+-                                        && delta.abs() > GESTURE_POSITION_THRESHOLD)
+-                                {
+-                                    set.activate(
+-                                        set.active,
+-                                        WorkspaceDelta::new_gesture_end(
+-                                            delta.abs(),
+-                                            velocity.abs(),
+-                                        ),
+-                                        workspace_state,
+-                                    )?;
+-                                } else {
+-                                    set.activate_previous(
+-                                        WorkspaceDelta::new_gesture_end(
+-                                            1.0 - delta.abs(),
+-                                            velocity.abs(),
+-                                        ),
+-                                        workspace_state,
+-                                    )?;
+-                                }
+-                            }
+-                            _ => {} // Do nothing
++                    if let Some((_, WorkspaceDelta::Gesture(delta))) = set.previously_active {
++                        if (velocity > 0.0 && velocity.abs() >= GESTURE_VELOCITY_THRESHOLD)
++                            || (velocity.abs() < GESTURE_VELOCITY_THRESHOLD
++                                && delta.abs() > GESTURE_POSITION_THRESHOLD)
++                        {
++                            set.activate(
++                                set.active,
++                                WorkspaceDelta::new_gesture_end(delta.abs(), velocity.abs()),
++                                workspace_state,
++                            )?;
++                        } else {
++                            set.activate_previous(
++                                WorkspaceDelta::new_gesture_end(1.0 - delta.abs(), velocity.abs()),
++                                workspace_state,
++                            )?;
+                         }
+                     }
+ 
+@@ -1645,32 +1636,21 @@ impl Shell {
+             }
+             WorkspaceMode::Global => {
+                 for set in self.workspaces.sets.values_mut() {
+-                    if let Some((_, workspace_delta)) = set.previously_active {
+-                        match workspace_delta {
+-                            WorkspaceDelta::Gesture(delta) => {
+-                                if (velocity > 0.0 && velocity.abs() >= GESTURE_VELOCITY_THRESHOLD)
+-                                    || (velocity.abs() < GESTURE_VELOCITY_THRESHOLD
+-                                        && delta.abs() > GESTURE_POSITION_THRESHOLD)
+-                                {
+-                                    set.activate(
+-                                        set.active,
+-                                        WorkspaceDelta::new_gesture_end(
+-                                            delta.abs(),
+-                                            velocity.abs(),
+-                                        ),
+-                                        workspace_state,
+-                                    )?;
+-                                } else {
+-                                    set.activate_previous(
+-                                        WorkspaceDelta::new_gesture_end(
+-                                            1.0 - delta.abs(),
+-                                            velocity.abs(),
+-                                        ),
+-                                        workspace_state,
+-                                    )?;
+-                                }
+-                            }
+-                            _ => {} // Do nothing
++                    if let Some((_, WorkspaceDelta::Gesture(delta))) = set.previously_active {
++                        if (velocity > 0.0 && velocity.abs() >= GESTURE_VELOCITY_THRESHOLD)
++                            || (velocity.abs() < GESTURE_VELOCITY_THRESHOLD
++                                && delta.abs() > GESTURE_POSITION_THRESHOLD)
++                        {
++                            set.activate(
++                                set.active,
++                                WorkspaceDelta::new_gesture_end(delta.abs(), velocity.abs()),
++                                workspace_state,
++                            )?;
++                        } else {
++                            set.activate_previous(
++                                WorkspaceDelta::new_gesture_end(1.0 - delta.abs(), velocity.abs()),
++                                workspace_state,
++                            )?;
+                         }
+                     }
+                 }
+@@ -2141,8 +2121,7 @@ impl Shell {
+                 } else {
+                     (Duration::ZERO, self.overview_mode.active_trigger().cloned())
+                 };
+-            self.overview_mode =
+-                OverviewMode::Ended(trigger, Instant::now() - reverse_duration);
++            self.overview_mode = OverviewMode::Ended(trigger, Instant::now() - reverse_duration);
+         }
+     }
+ 
+@@ -2878,7 +2857,6 @@ impl Shell {
+         }
+     }
+ 
+-    #[must_use]
+     pub fn move_current(
+         &mut self,
+         seat: &Seat<State>,
+@@ -3061,17 +3039,13 @@ impl Shell {
+         }
+         // update fullscreen state to restore to the new workspace
+         if let WorkspaceRestoreData::Fullscreen(Some(FullscreenRestoreData {
+-            previous_state,
++            previous_state:
++                FullscreenRestoreState::Tiling { workspace, .. }
++                | FullscreenRestoreState::Floating { workspace, .. },
+             ..
+         })) = &mut window_state
+         {
+-            match previous_state {
+-                FullscreenRestoreState::Tiling { workspace, .. }
+-                | FullscreenRestoreState::Floating { workspace, .. } => {
+-                    *workspace = *to;
+-                }
+-                _ => {}
+-            }
++            *workspace = *to;
+         }
+ 
+         for mapped in from_workspace
+@@ -3531,7 +3505,11 @@ impl Shell {
+                         .tiling_layer
+                         .mapped()
+                         .any(|(m, _)| m == &old_mapped)
+-                } { ManagedLayer::Tiling } else { ManagedLayer::Floating };
++                } {
++                    ManagedLayer::Tiling
++                } else {
++                    ManagedLayer::Floating
++                };
+ 
+                 // if this changed the width, the window was tiled in floating mode
+                 if let Some(new_size) = new_size {
+@@ -3834,11 +3812,7 @@ impl Shell {
+     }
+ 
+     #[must_use]
+-    pub fn move_current_element<'a>(
+-        &mut self,
+-        direction: Direction,
+-        seat: &Seat<State>,
+-    ) -> MoveResult {
++    pub fn move_current_element(&mut self, direction: Direction, seat: &Seat<State>) -> MoveResult {
+         let Some(output) = seat.focused_output() else {
+             return MoveResult::None;
+         };
+@@ -4017,17 +3991,19 @@ impl Shell {
+                     was_maximized: false,
+                 },
+             });
+-        } else if let Some((workspace, window)) = self.workspaces.sets.values_mut().find_map(|set| {
+-            set.workspaces.iter_mut().find_map(|workspace| {
+-                let window = workspace
+-                    .get_fullscreen()
+-                    .cloned()
+-                    .into_iter()
+-                    .chain(workspace.mapped().map(|m| m.active_window()))
+-                    .find(|s| s == surface);
+-                window.map(|s| (workspace, s))
++        } else if let Some((workspace, window)) =
++            self.workspaces.sets.values_mut().find_map(|set| {
++                set.workspaces.iter_mut().find_map(|workspace| {
++                    let window = workspace
++                        .get_fullscreen()
++                        .cloned()
++                        .into_iter()
++                        .chain(workspace.mapped().map(|m| m.active_window()))
++                        .find(|s| s == surface);
++                    window.map(|s| (workspace, s))
++                })
+             })
+-        }) {
++        {
+             let to = minimize_rectangle(workspace.output(), &window);
+             if let Some(minimized) = workspace.minimize(surface, to) {
+                 workspace.minimized_windows.push(minimized);
+@@ -4333,9 +4309,7 @@ impl Shell {
+         seat: &Seat<State>,
+         loop_handle: &LoopHandle<'static, State>,
+     ) -> Option<KeyboardFocusTarget> {
+-        let Some(focused_output) = seat.focused_output() else {
+-            return None;
+-        };
++        let focused_output = seat.focused_output()?;
+         let set = self.workspaces.sets.get_mut(&focused_output).unwrap();
+         let workspace = &mut set.workspaces[set.active];
+ 
+@@ -4507,9 +4481,7 @@ impl Shell {
+     where
+         CosmicSurface: PartialEq<S>,
+     {
+-        let Some(mapped) = self.element_for_surface(surface).cloned() else {
+-            return None;
+-        };
++        let mapped = self.element_for_surface(surface).cloned()?;
+         let window;
+ 
+         let old_fullscreen = if let Some((old_output, set)) = self
+diff --git a/src/shell/workspace.rs b/src/shell/workspace.rs
+index 5469d052c..87908e078 100644
+--- a/src/shell/workspace.rs
++++ b/src/shell/workspace.rs
+@@ -610,8 +610,7 @@ impl Workspace {
+ 
+         // unmaximize_request might have triggered a `floating_layer.refresh()`,
+         // which may have already removed a non-alive surface.
+-        if let Some(floating_geometry) = self.floating_layer.unmap(mapped, None).or(was_maximized)
+-        {
++        if let Some(floating_geometry) = self.floating_layer.unmap(mapped, None).or(was_maximized) {
+             return Some(WorkspaceRestoreData::Floating(Some(FloatingRestoreData {
+                 geometry: floating_geometry,
+                 output_size: self.output.geometry().size.as_logical(),
+@@ -659,16 +658,16 @@ impl Workspace {
+             return Some((surface, WorkspaceRestoreData::Fullscreen(previous)));
+         }
+ 
+-        let Some(mapped) = self.element_for_surface(surface) else {
+-            return None;
+-        };
+-
++        let mapped = self.element_for_surface(surface)?;
+         let maybe_stack = mapped.stack_ref().filter(|s| s.len() > 1);
+         if let Some(stack) = maybe_stack {
+             if stack.len() > 1 {
+                 let idx = stack.surfaces().position(|s| &s == surface);
+-                let layer = if self
+-                    .is_tiled(surface) { ManagedLayer::Tiling } else { ManagedLayer::Floating };
++                let layer = if self.is_tiled(surface) {
++                    ManagedLayer::Tiling
++                } else {
++                    ManagedLayer::Floating
++                };
+                 return idx
+                     .and_then(|idx| stack.remove_idx(idx))
+                     .map(|s| (s, layer.into()));
+diff --git a/src/utils/screenshot.rs b/src/utils/screenshot.rs
+index 5ec34187f..a9d2a95f2 100644
+--- a/src/utils/screenshot.rs
++++ b/src/utils/screenshot.rs
+@@ -58,7 +58,7 @@ pub fn screenshot_window(state: &mut State, surface: &CosmicSurface) {
+                 smithay::backend::renderer::damage::Error::OutputNoMode(_) => unreachable!(),
+             })?;
+         let mapping = renderer.copy_framebuffer(
+-            &mut fb,
++            &fb,
+             bbox.to_buffer(1, Transform::Normal, &bbox.size),
+             format,
+         )?;
+diff --git a/src/wayland/handlers/workspace.rs b/src/wayland/handlers/workspace.rs
+index d7bc6e0b9..91270728e 100644
+--- a/src/wayland/handlers/workspace.rs
++++ b/src/wayland/handlers/workspace.rs
+@@ -46,10 +46,7 @@ impl WorkspaceHandler for State {
+                     if let Some(workspace) = shell.workspaces.space_for_handle_mut(&workspace) {
+                         let mut guard = self.common.workspace_state.update();
+                         workspace.set_tiling(
+-                            match state.into_result() {
+-                                Ok(TilingState::FloatingOnly) => false,
+-                                _ => true,
+-                            },
++                            !matches!(state.into_result(), Ok(TilingState::FloatingOnly)),
+                             &seat,
+                             &mut guard,
+                         );
+diff --git a/src/wayland/protocols/image_capture_source.rs b/src/wayland/protocols/image_capture_source.rs
+index 3fe7e35ab..f71eaca9a 100644
+--- a/src/wayland/protocols/image_capture_source.rs
++++ b/src/wayland/protocols/image_capture_source.rs
+@@ -288,9 +288,10 @@ where
+         data_init: &mut DataInit<'_, D>,
+     ) {
+         if let ToplevelSourceRequest::CreateSource {
+-                source,
+-                toplevel_handle,
+-            } = request {
++            source,
++            toplevel_handle,
++        } = request
++        {
+             let data = match window_from_ext_handle(state, &toplevel_handle) {
+                 Some(toplevel) => ImageCaptureSourceData::Toplevel(toplevel.clone()),
+                 None => ImageCaptureSourceData::Destroyed,
+@@ -316,7 +317,7 @@ where
+         _state: &mut D,
+         _client: &Client,
+         _resource: &ExtImageCaptureSourceV1,
+-        request: <ExtImageCaptureSourceV1 as Resource>::Request,
++        _request: <ExtImageCaptureSourceV1 as Resource>::Request,
+         _data: &ImageCaptureSourceData,
+         _dhandle: &DisplayHandle,
+         _data_init: &mut DataInit<'_, D>,
+diff --git a/src/wayland/protocols/output_configuration/handlers/wlr.rs b/src/wayland/protocols/output_configuration/handlers/wlr.rs
+index 75d75a06c..441b72447 100644
+--- a/src/wayland/protocols/output_configuration/handlers/wlr.rs
++++ b/src/wayland/protocols/output_configuration/handlers/wlr.rs
+@@ -276,10 +276,11 @@ where
+                     .iter_mut()
+                     .map(|(head, conf)| {
+                         let output = match inner
+-                        .instances
+-                        .iter()
+-                        .find_map(|instance| instance.heads.iter().find(|h| h.obj == *head))
+-                        .map(|i| i.output.clone()) {
++                            .instances
++                            .iter()
++                            .find_map(|instance| instance.heads.iter().find(|h| h.obj == *head))
++                            .map(|i| i.output.clone())
++                        {
+                             Some(o) => o,
+                             None => {
+                                 return Err(zwlr_output_configuration_head_v1::Error::InvalidMode);
+@@ -323,10 +324,10 @@ where
+                         .iter()
+                         .any(|o| !inner.outputs.contains(o))
+                     || final_conf.iter().any(|(o, c)| match c {
+-                        OutputConfiguration::Enabled { mode, .. } => match mode {
+-                            Some(ModeConfiguration::Mode(m)) => !o.modes().contains(m),
+-                            _ => false,
+-                        },
++                        OutputConfiguration::Enabled {
++                            mode: Some(ModeConfiguration::Mode(m)),
++                            ..
++                        } => !o.modes().contains(m),
+                         _ => false,
+                     })
+                 {
+diff --git a/src/wayland/protocols/overlap_notify.rs b/src/wayland/protocols/overlap_notify.rs
+index 1310b5ebd..46b7476bf 100644
+--- a/src/wayland/protocols/overlap_notify.rs
++++ b/src/wayland/protocols/overlap_notify.rs
+@@ -415,9 +415,10 @@ where
+         data_init: &mut smithay::reexports::wayland_server::DataInit<'_, D>,
+     ) {
+         if let zcosmic_overlap_notify_v1::Request::NotifyOnOverlap {
+-                overlap_notification,
+-                layer_surface,
+-            } = request {
++            overlap_notification,
++            layer_surface,
++        } = request
++        {
+             let notification = data_init.init(overlap_notification, ());
+             if let Some(surface) = state.layer_surface_from_resource(layer_surface) {
+                 let mut data = surface
+@@ -453,7 +454,7 @@ where
+         _state: &mut D,
+         _client: &Client,
+         _resource: &ZcosmicOverlapNotificationV1,
+-        request: <ZcosmicOverlapNotificationV1 as Resource>::Request,
++        _request: <ZcosmicOverlapNotificationV1 as Resource>::Request,
+         _data: &(),
+         _dhandle: &DisplayHandle,
+         _data_init: &mut smithay::reexports::wayland_server::DataInit<'_, D>,
+diff --git a/src/wayland/protocols/toplevel_info.rs b/src/wayland/protocols/toplevel_info.rs
+index c9a9735a9..1e38a0962 100644
+--- a/src/wayland/protocols/toplevel_info.rs
++++ b/src/wayland/protocols/toplevel_info.rs
+@@ -430,7 +430,7 @@ where
+     }
+ }
+ 
+-fn send_toplevel_to_client<D, W: 'static>(
++fn send_toplevel_to_client<D, W>(
+     dh: &DisplayHandle,
+     workspace_state: &WorkspaceState<D>,
+     info: &ZcosmicToplevelInfoV1,
+@@ -442,7 +442,7 @@ where
+         + Dispatch<ZcosmicToplevelHandleV1, ToplevelHandleState<W>>
+         + ToplevelInfoHandler<Window = W>
+         + 'static,
+-    W: Window,
++    W: Window + 'static,
+ {
+     let mut state = window
+         .user_data()
+diff --git a/src/xwayland.rs b/src/xwayland.rs
+index 358607786..420533ca1 100644
+--- a/src/xwayland.rs
++++ b/src/xwayland.rs
+@@ -388,7 +388,7 @@ impl Common {
+                 }
+                 EavesdroppingKeyboardMode::Combinations => {
+                     // don't forward alpha-numeric keys, just because shift is held, but forward shift itself
+-                    if !is_modifier && !(modifiers.alt || modifiers.ctrl || modifiers.logo) {
++                    if !(is_modifier || modifiers.alt || modifiers.ctrl || modifiers.logo) {
+                         return;
+                     }
+                 }
+@@ -771,7 +771,9 @@ impl XwmHandler for State {
+             .map(|pending| pending.surface.clone())
+         {
+             if let std::collections::hash_map::Entry::Vacant(e) = shell
+-                .pending_activations.entry(crate::shell::ActivationKey::X11(surface.window_id())) {
++                .pending_activations
++                .entry(crate::shell::ActivationKey::X11(surface.window_id()))
++            {
+                 if let Some(startup_id) = window.x11_surface().and_then(|x| x.startup_id()) {
+                     if let Some(context) = self
+                         .common
