@@ -55,9 +55,9 @@ git = "https://github.com/pop-os/window_clipboard.git"
 tag = "sctk-0.20"
 replace-with = "vendored-sources"
 
-[source."git+https://github.com/smithay/smithay.git?rev=1ed69cb"]
+[source."git+https://github.com/smithay/smithay.git?rev=5fb12b8"]
 git = "https://github.com/smithay/smithay.git"
-rev = "1ed69cb"
+rev = "5fb12b8"
 replace-with = "vendored-sources"
 
 [source.vendored-sources]
