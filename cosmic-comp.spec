@@ -14,6 +14,7 @@ Source2:        cargo_config
 
 BuildRequires:  rust-packaging
 BuildRequires:  make
+BuildRequires:  just
 BuildRequires:  pkgconfig
 BuildRequires:  rust >= 1.80
 BuildRequires:  pkgconfig(egl)
@@ -38,10 +39,10 @@ mkdir .cargo
 cp %{SOURCE2} .cargo/config
 
 %build
-%make_build
+just build-release
 
 %install
-%make_install
+just rootdir=%{buildroot} prefix=%{_prefix} install
 install -d %{buildroot}%{_sysconfdir}/%{name}
 
 %files
