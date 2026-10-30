@@ -6,6 +6,11 @@ git = "https://github.com/Drakulix/id-tree.git"
 branch = "feature/copy_clone"
 replace-with = "vendored-sources"
 
+[source."git+https://github.com/Smithay/smithay-egui.git?rev=6511552"]
+git = "https://github.com/Smithay/smithay-egui.git"
+rev = "6511552"
+replace-with = "vendored-sources"
+
 [source."git+https://github.com/iced-rs/cryoglyph.git?rev=e429a025df36ab8145708acb309080ae3deec17a"]
 git = "https://github.com/iced-rs/cryoglyph.git"
 rev = "e429a025df36ab8145708acb309080ae3deec17a"
@@ -55,9 +60,9 @@ git = "https://github.com/pop-os/window_clipboard.git"
 tag = "sctk-0.20"
 replace-with = "vendored-sources"
 
-[source."git+https://github.com/smithay/smithay.git?rev=5fb12b8"]
+[source."git+https://github.com/smithay/smithay.git?rev=8a27023"]
 git = "https://github.com/smithay/smithay.git"
-rev = "5fb12b8"
+rev = "8a27023"
 replace-with = "vendored-sources"
 
 [source.vendored-sources]
